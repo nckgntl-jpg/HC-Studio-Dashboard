@@ -730,6 +730,9 @@ function App() {
 
   const weeklyProjects = useMemo(() => {
     var today = new Date();
+    // End of current week (Friday)
+    var endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() + (5 - today.getDay()));
     function parseD(s) {
       if (!s) return null;
       if (s instanceof Date) return s;
@@ -758,10 +761,11 @@ function App() {
     active.forEach(function(p) {
       if (!p.contract || !p.fees_used) return;
       var endDate = getProjectEnd(p);
-      if (!endDate || endDate <= today) return;
+      // Skip projects with no end date, already past, or ending this week
+      if (!endDate || endDate <= endOfWeek) return;
       var remaining = Math.max(0, p.contract - p.fees_used);
       var weeksLeft = (endDate - today) / (7 * 24 * 60 * 60 * 1000);
-      if (weeksLeft <= 0) return;
+      if (weeksLeft < 1) return;
       var hrsPerWeek = (remaining / BLENDED_RATE) / weeksLeft;
       result.push({
         id: p.id, name: p.name, client: p.client, team: p.team,
