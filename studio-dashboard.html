@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Healthcare Studio — Project Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:#0d0f14;color:#fff;font-family:'DM Sans',sans-serif;min-height:100vh}
+    ::-webkit-scrollbar{width:4px;height:4px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:4px}
+    .row:hover{background:rgba(255,255,255,0.04)!important;cursor:pointer}
+    .chip:hover{opacity:0.75;cursor:pointer}
+    input::placeholder{color:rgba(255,255,255,0.2)}
+    input,select,button{outline:none;font-family:inherit}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+const ALL_PROJECTS = [
+  ["25183", "ABC", "425 Holiday Drive", ["Steve"], [], "Hold", false, "", 20000, 34332.5, false, "[{\"l\": \"3.1 CA - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 Exist. Cond. Survey + SD - LGA\", \"c\": 2500.0, \"u\": 16810.0, \"inv\": 2500.0, \"t\": false}, {\"l\": \"2.1 CD + Permitting - LGA\", \"c\": 17500.0, \"u\": 17522.5, \"inv\": 14500.0, \"t\": false}]"],
+  ["25214", "ABC", "ABC Monroeville Ardmore Blvd", ["Steve"], [], "Hold", false, "", 22000, 6051.25, false, "[{\"l\": \"3.1 CA - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"2.1 CDs + Permitting - LGA\", \"c\": 16000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 Exist Cond. Survey + SD - LGA\", \"c\": 2000.0, \"u\": 6051.25, \"inv\": 2000.0, \"t\": false}, {\"l\": \"XTR1.1 Generate Digital Floor Plan - LGA\", \"c\": 4000.0, \"u\": null, \"inv\": 4000.0, \"t\": false}]"],
+  ["25347", "ABC", "ABC Dublin, OH", ["Steve"], ["Osborn"], "CA", true, "SD/S1: 6/16/2025 - 8/1/2025 CD/S3: 6/30/2025 - 9/30/2025 CA/S4: 11/6/2025 - 6/5/2026 (hourly)", 21677.5, 29387.5, false, "[{\"l\": \"2.1 -  CD & Permitting - LGA\", \"c\": 17500.0, \"u\": 19730.0, \"inv\": 17500.0, \"t\": false}, {\"l\": \"1.1 - Exist. Cond. Survey + SD - LGA\", \"c\": 2500.0, \"u\": 7980.0, \"inv\": 2500.0, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 0.0, \"u\": 1677.5, \"inv\": 1550.0, \"t\": false}, {\"l\": \"XTR1.1 - Site Visit beyond 120 miles from Pitt - LGA\", \"c\": 0.0, \"u\": null, \"inv\": 495.0, \"t\": false}, {\"l\": \"XTR3.1 -Structural Engineering - LGA\", \"c\": 0.0, \"u\": null, \"inv\": 66.13, \"t\": false}]"],
+  ["25348", "ABC", "ABC Westerville OH", ["Steve"], ["Osborn"], "CA", true, "SD/S1: 6/16/2025 - 8/1/2025 CD/S3: 6/30/2025 - 9/30/2025 CA/S4: 11/6/2025 - 6/5/2026 (hourly)", 24707.5, 28680.0, false, "[{\"l\": \"1.1 - Exist. Cond. Survey & SD - LGA\", \"c\": 2500.0, \"u\": 7042.5, \"inv\": 2500.0, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 Miles from PItt. - LGA\", \"c\": 0.0, \"u\": null, \"inv\": 495.0, \"t\": false}, {\"l\": \"2.1 - CDs & Permitting - LGA\", \"c\": 17500.0, \"u\": 16930.0, \"inv\": 17500.0, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 0.0, \"u\": 2067.5, \"inv\": 1480.0, \"t\": false}, {\"l\": \"XTR3.0 - Bulletin #1 - LGA\", \"c\": 0.0, \"u\": 2640.0, \"inv\": 2640.0, \"t\": false}]"],
+  ["25361", "ABC", "ABC Hilliard Trueman Blvd", ["Steve"], [], "Hold", false, "", 22000, 2432.5, false, "[{\"l\": \"2.1 - CDs & Permitting - LGA\", \"c\": 17500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 - Exist Cond Survey & SD - LGA\", \"c\": 2500.0, \"u\": 2432.5, \"inv\": 2500.0, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR 2.1 - Site Invest w No As-built - Osborn\", \"c\": 2000.0, \"u\": null, \"inv\": 2000.0, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 miles from Pitt - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.2 - CA - Osborn\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25362", "ABC", "ABC Gahana Office Center", ["Steve"], [], "Hold", false, "", 18000, 5667.5, false, "[{\"l\": \"1.1 - Exist Cond Surv & SD - LGA\", \"c\": 2000.0, \"u\": 5667.5, \"inv\": 2000.0, \"t\": false}, {\"l\": \"2.1 - CDs & Permitting - LGA\", \"c\": 16000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 Miles from Pitt - LGA\", \"c\": 0.0, \"u\": null, \"inv\": 495.0, \"t\": false}]"],
+  ["25362.1", "ABC", "ABC Gahana Office Center", ["Steve"], [], "Hold", false, "", 2000, 2425.0, false, "[{\"l\": \"1.1 - Exist Cond + SD - LGA\", \"c\": 2000.0, \"u\": 1435.0, \"inv\": 1000.0, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 Miles from Pitt - LGA\", \"c\": 0.0, \"u\": 990.0, \"inv\": 990.0, \"t\": false}]"],
+  ["25462", "ABC", "ABC Reynoldsburg", ["Steve"], [], "Hold", false, "", 26400, 7455.0, false, "[{\"l\": \"2.1 - CDs & Agency Approval - LGA\", \"c\": 16000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 - Exist Cond./SD - LGA\", \"c\": 2000.0, \"u\": 4485.0, \"inv\": 2000.0, \"t\": false}, {\"l\": \"EX1.1 - Site Investigation, No As-Builts - LGA\", \"c\": 2000.0, \"u\": 2475.0, \"inv\": 2000.0, \"t\": false}, {\"l\": \"EX2.1 - Generation Digital Floor Plan - LGA\", \"c\": 4000.0, \"u\": 495.0, \"inv\": 4000.0, \"t\": false}, {\"l\": \"EX4.1 - Site Plan if no Site Plan exists - LGA\", \"c\": 2400.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["26156", "ABC", "ABC Westerville Play Yard", ["David"], [], "Rendering", true, "SD/S1: 3/16/2026 - 3/23/2026", null, null, false, "[]"],
+  ["23099", "AHN", "AHN AVH Parking Garage Renovation", ["Bill"], ["KSS", "HF Lenz"], "Stage 4", true, "CD/S3: 3/1/2024 - 10/31/2024 CA/S4: 11/5/2024 - 12/31/2026", 80657.44, 38905.0, false, "[{\"l\": \"3.1 - Stage 3 (CD) - Architectural\", \"c\": 43904.0, \"u\": 27460.0, \"inv\": 43904.0, \"t\": false}, {\"l\": \"2.1 - Stage 2 (SD/DD) - Architectural\", \"c\": 2660.0, \"u\": null, \"inv\": 2660.0, \"t\": false}, {\"l\": \"1.1 - Stage 1 (Programing) - Architecture\", \"c\": 3660.0, \"u\": null, \"inv\": 3660.0, \"t\": false}, {\"l\": \"4.1 - Stage 4 (CA) - Architectural\", \"c\": 30433.44, \"u\": 11445.0, \"inv\": 30433.44, \"t\": false}]"],
+  ["24387", "AHN", "AHN SVH Roof", ["Nick"], [], "Closeout", false, "", 88187.5, 35681.25, false, "[{\"l\": \"1.1 - Base Bid - Stage 3 LGA\", \"c\": 36000.0, \"u\": 20363.75, \"inv\": 36000.0, \"t\": false}, {\"l\": \"3.1 - Alternate Scope - Stage 3 LGA\", \"c\": 21000.0, \"u\": 1462.5, \"inv\": 21000.0, \"t\": false}, {\"l\": \"4.1 - Alternate Scope - Stage 4 LGA\", \"c\": 5000.0, \"u\": 1920.0, \"inv\": 5000.0, \"t\": false}, {\"l\": \"2.1 - Base Bid - Stage 4 LGA\", \"c\": 16000.0, \"u\": 4652.5, \"inv\": 16000.0, \"t\": false}, {\"l\": \"8.0 - VE ASAFs\", \"c\": 5287.5, \"u\": 3975.0, \"inv\": 5287.5, \"t\": false}, {\"l\": \"9.1 - ASAF #2 - New Stairs - LGA\", \"c\": 4900.0, \"u\": 2587.5, \"inv\": 4900.0, \"t\": false}, {\"l\": \"9.3 - ASAF #3 - Additional Roofs\", \"c\": 0.0, \"u\": 720.0, \"inv\": null, \"t\": false}]"],
+  ["25051", "AHN", "SVH Pharmacy", ["Nick"], [], "Stage 4", false, "", 11090, 8437.5, false, "[{\"l\": \"2.1 - CD's - LGA\", \"c\": 4750.0, \"u\": 2310.0, \"inv\": 4750.0, \"t\": false}, {\"l\": \"1.1 - Existing Conditions/SD - LGA\", \"c\": 4750.0, \"u\": 4537.5, \"inv\": 4750.0, \"t\": false}, {\"l\": \"3.1 - CA/ASAFs - LGA\", \"c\": 0.0, \"u\": 1590.0, \"inv\": 1590.0, \"t\": false}]"],
+  ["25293", "AHN", "ANH SVH AP Gross Room Renovation", ["Steve", "Nick"], [], "Closeout", false, "", 33655, 26345.0, false, "[{\"l\": \"1.1 - Stage 2 - LGA\", \"c\": 8600.0, \"u\": 9670.0, \"inv\": 8600.0, \"t\": false}, {\"l\": \"2.1 - Stage 3 - LGA\", \"c\": 16786.85, \"u\": 10262.5, \"inv\": 16786.85, \"t\": false}, {\"l\": \"3.1 - Stage 4 - LGA\", \"c\": 8268.15, \"u\": 6412.5, \"inv\": 8268.15, \"t\": false}]"],
+  ["25292", "AHN", "AHN SVH Simulation Lab", ["Nick", "Steve", "Ashley"], ["Osborn"], "Stage 3", true, "SD/S1: 5/21/2025 - 7/23/2025 DD/S2: 10/1/2025 - 11/12/2025 CD/S3: 3/11/2026 - 5/15/2026", 83075, 30532.5, false, "[{\"l\": \"1.1 - Stage 1 - LGA\", \"c\": 6760.0, \"u\": 20115.0, \"inv\": 6760.0, \"t\": false}, {\"l\": \"2.1 - Stage 2 - LGA\", \"c\": 4540.0, \"u\": 7322.5, \"inv\": 4540.0, \"t\": false}, {\"l\": \"2.3 - Stage 2 - ASAF #1 - 3D View\", \"c\": 1275.0, \"u\": 1087.5, \"inv\": null, \"t\": false}, {\"l\": \"3.1 - Stage 3 -Base - LGA\", \"c\": 35000.0, \"u\": 2007.5, \"inv\": null, \"t\": false}, {\"l\": \"4.1 - Stage 4 - Base - LGA\", \"c\": 17000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.6 - Stage 3 - Roof Replacement - LGA\", \"c\": 12000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.3 - Stage 3 - Early Demo - LGA\", \"c\": 1000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.5 - Stage 3 - Window Replacement - LGA\", \"c\": 2500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"4.3 - Stage 4 - Roof Replacement - LGA\", \"c\": 3000.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25449", "AHN", "AHN Forbes Hospital MRI Replacement", ["Nick", "Miki"], ["Osborn", "B&H"], "Stage 2", true, "SD/S1: 8/19/2025 - 2/4/2026 Stage 3a: 1/12/26 - 4/15/26", 113480, 87796.25, false, "[{\"l\": \"2.1 - Stage 2 - LGA\", \"c\": 22970.0, \"u\": 27770.0, \"inv\": 22970.0, \"t\": false}, {\"l\": \"1.1 - Stage 1 - LGA\", \"c\": 24480.0, \"u\": 22612.5, \"inv\": 24480.0, \"t\": false}, {\"l\": \"XTR1.1 - ASAF 1 - Revised Stage 1 after Stage 2- LGA\", \"c\": 32030.0, \"u\": 26993.75, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.1a - ASAF 2 - Stage 3 Base - LGA\", \"c\": 22720.0, \"u\": 10420.0, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.1b - ASAF 2 - Stage 3 Add - LGA\", \"c\": 3280.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.2a - ASAF 2 - Stage 4 Base - LGA\", \"c\": 5760.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.2b - ASAF 2 - Stage 4 Add - LGA\", \"c\": 2240.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25475", "AHN", "AHN Bethel Physical Therapy Relocation", ["Steve"], ["FMRW"], "CA", true, "DD/S2: 8/28/2025 - 11/12/2025 CD/S3: 10/20/2025 - 12/18/2025 CA/S4: 4/20/2026 - 6/20/2026", 29500, 22580.0, false, "[{\"l\": \"RE - Expenses - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.1 - Permitting - LGA\", \"c\": 3000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"2.1 - CD's - LGA\", \"c\": 19500.0, \"u\": 17862.5, \"inv\": 19500.0, \"t\": false}, {\"l\": \"1.1 - Existing Conditions/SD - LGA\", \"c\": 7000.0, \"u\": 4717.5, \"inv\": 7000.0, \"t\": false}]"],
+  ["25508", "AHN", "AHN Bethel Cardiology", ["Steve"], ["FMRW"], "CA", true, "DD/S2: 8/28/2025 - 11/12/2025 CD/S3: 10/20/2025 - 12/18/2025 CA/S4: 4/20/2026 - 6/20/2026", 5000, 1360.0, false, "[{\"l\": \"1.0 - SOW Documents\", \"c\": 5000.0, \"u\": 1360.0, \"inv\": 5000.0, \"t\": false}, {\"l\": \"2.0 - Interior Design\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.0 - CA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["26017", "AHN", "AHN SVH Elevator", ["Nick", "Gary"], ["KSS"], "Stage 3", true, "CD/S3: 2/17/2026 - 4/10/2026", null, null, false, "[]"],
+  ["25617", "AHN", "AHN SVH CVI Nuclear Camera Upgrades", ["Nick", "Steve"], ["Osborn", "B&H"], "Stage 3", true, "DD/S2: 11/7/2025 - 2/27/2026", 19959, 8975.0, false, "[{\"l\": \"Architectural - LGA\", \"c\": 9690.0, \"u\": 8975.0, \"inv\": 9690.0, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 10269.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["P26XXX", "AHN", "SVH CT, MRI, Cath Lab", ["Nick"], [], "Pending", false, "", null, null, false, "[]"],
+  ["26115", "AHN", "WHWP - Imaging Replacement Masterplan", ["Nick", "Miki", "Chris"], ["Osborn"], "Stage 1", true, "SD/S1: 3/23/2026 - 5/4/2026", null, 3888.75, false, "[{\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": 3888.75, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Training - All Stages\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["26112", "AHN", "AHN SVH Roof Replacement V2", ["Nick", "Gary"], [], "Stage 3", true, "CD/S3: 4/1/2026 - 5/30/2026", 86500, 1710.0, false, "[{\"l\": \"Architectural - LGA\", \"c\": 68000.0, \"u\": 1710.0, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 18500.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["P26061", "Familylinks", "Shadyside Location - Vestibule / Toilet Renovation", ["Nick"], [], "Proposal", true, "", null, null, false, "[]"],
+  ["P26062", "Familylinks", "Wilkinsburg - Duplex Consolidation", ["Nick"], [], "Proposal", true, "", null, null, false, "[]"],
+  ["25328", "Fresenius", "FME Hazelton", ["Steve"], [], "CA", true, "CA/S4: 2/1/2026 - 4/30/2026", 25000, 35326.25, false, "[{\"l\": \"1.0 - Site Investigation - LGA\", \"c\": 1100.0, \"u\": 5272.5, \"inv\": 1100.0, \"t\": false}, {\"l\": \"2.0 - Design Development - LGA\", \"c\": 4400.0, \"u\": 4612.5, \"inv\": 4400.0, \"t\": false}, {\"l\": \"4.0 -Construction Administration - LGA\", \"c\": 3080.0, \"u\": 3977.5, \"inv\": 2570.0, \"t\": false}, {\"l\": \"3.0 -100% Construction Docs - LGA\", \"c\": 11000.0, \"u\": 21463.75, \"inv\": 11000.0, \"t\": false}, {\"l\": \"7.0 - Final Payment - LGA\", \"c\": 1100.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"6.0 - Clean \\\"As Built\\\" Drawings - LGA\", \"c\": 660.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"5.0 - Punch List - LGA\", \"c\": 660.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"8.1 - Site Visit 1\", \"c\": 1500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"8.2 - Site Visit 2\", \"c\": 1500.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25243", "Industrial", "Clean Care Linen Fire Repair", ["Gary"], [], "CA", true, "", 56120, 71672.5, false, "[{\"l\": \"1.1 - Schematic Design (LGA)\", \"c\": 1100.0, \"u\": 40447.5, \"inv\": 40265.14, \"t\": false}, {\"l\": \"1.3 - Construction Documents - LGA\", \"c\": 24100.0, \"u\": 25027.5, \"inv\": 19648.0, \"t\": false}, {\"l\": \"1.6 - ASAF #3 - LGA Credit\", \"c\": -8000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.6 - ASAF #3 - LGA Additional\", \"c\": 1440.0, \"u\": 6197.5, \"inv\": null, \"t\": false}, {\"l\": \"1.5 - ASAF #2 - LGA\", \"c\": 2880.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.4 ASAF #1 - LGA SD\", \"c\": 5900.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.4 - ASAF #1 - LGA CD\", \"c\": 28700.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.7 - Future ASAF - Bathroom Reconfig.\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25054", "Industrial", "Warehouse Office Fit Out Allegheny Petroleum", ["Drew"], [], "CA", true, "SD/S1: 2/5/2025 - 3/25/2025 CD/S3: 9/26/2025 - 3/11/2026 CA/S4: 5/1/2026 - 10/1/2026 (hourly)", 45440.0, 74108.75, false, "[{\"l\": \"1.1 - Schematic Design\", \"c\": 8500.0, \"u\": 11615.0, \"inv\": 8500.0, \"t\": false}, {\"l\": \"1.3 - Construction Documents\", \"c\": 27000.0, \"u\": 58798.75, \"inv\": 27000.0, \"t\": false}, {\"l\": \"1.0 - Existing Conditions\", \"c\": 3500.0, \"u\": null, \"inv\": 3500.0, \"t\": false}, {\"l\": \"1.4 - Permitting\", \"c\": 3500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1a Schematic Design Additional Schemes\", \"c\": 0.0, \"u\": 460.0, \"inv\": 460.0, \"t\": false}, {\"l\": \"ASAF #1 - Adjusting Plans to Project Budget\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.35 -  Interior Design\", \"c\": 0.0, \"u\": 72.5, \"inv\": null, \"t\": false}, {\"l\": \"1.5 - CA - LGA\", \"c\": 0.0, \"u\": 240.0, \"inv\": null, \"t\": false}, {\"l\": \"ASAF #4 2nd Floor Restroom Reconfig (LGA)\", \"c\": 2940.0, \"u\": 2922.5, \"inv\": null, \"t\": false}]"],
+  ["25054.1", "Industrial", "Warehouse Office Fit Out Allegheny Petroleum", ["Drew", "David"], ["Claitman"], "", false, "", null, 23258.75, false, "[{\"l\": \"XTRA\", \"c\": 0.0, \"u\": 23258.75, \"inv\": 23258.75, \"t\": false}]"],
+  ["25110.1", "Industrial", "Clearview Greentree Hill", ["Gary"], [], "CA", true, "CA/S4: 6/1/2026 - 2/1/2027 (hourly)", 238235, 210967.5, false, "[{\"l\": \"Schematic Design\", \"c\": 0.0, \"u\": 85858.75, \"inv\": 85884.86, \"t\": false}, {\"l\": \"Site Planning\", \"c\": 0.0, \"u\": 462.5, \"inv\": 462.5, \"t\": false}, {\"l\": \"Municipal / AHJ Approvals\", \"c\": 0.0, \"u\": 5313.75, \"inv\": 4215.0, \"t\": false}, {\"l\": \"Design Development\", \"c\": 60200.0, \"u\": 56285.0, \"inv\": 60200.0, \"t\": false}, {\"l\": \"Bidding / Permitting\", \"c\": 5000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Documents\", \"c\": 81400.0, \"u\": 63047.5, \"inv\": 81400.0, \"t\": false}]"],
+  ["25307", "Industrial", "Waterdam Rite Aid Reuse Silk & Stewart", ["Gary", "David"], [], "CA", true, "", null, null, false, "[]"],
+  ["25534", "Industrial", "We Rock the Spectrum - Butler", ["Drew", "David"], [], "CA", true, "", 18128.75, 17911.25, false, "[{\"l\": \"Arch. - CD / Permitting\", \"c\": 18020.0, \"u\": 17802.5, \"inv\": 18020.0, \"t\": false}, {\"l\": \"Arch. - CA\", \"c\": 0.0, \"u\": 108.75, \"inv\": 108.75, \"t\": false}]"],
+  ["25504", "Industrial", "The Back Nine Golf - Lafayette", ["Drew", "David"], [], "CA", true, "CD/S3: 3/1/2026 - 4/15/2026", 14200, 18263.75, false, "[{\"l\": \"SD\", \"c\": 3140.0, \"u\": 8165.0, \"inv\": 3140.0, \"t\": false}, {\"l\": \"CD/Permitting\", \"c\": 11060.0, \"u\": 10098.75, \"inv\": 11060.0, \"t\": false}]"],
+  ["26013", "Industrial", "The Back Nine Golf - Mars", ["Drew", "David"], [], "CD", true, "CA/S4: 6/1/2026 - 8/31/2026 (hourly)", 14900, 19770.0, false, "[{\"l\": \"Arch - Schematic Design\", \"c\": 3300.0, \"u\": 12095.0, \"inv\": 3300.0, \"t\": false}, {\"l\": \"Arch - Construction Documents/Permitting\", \"c\": 11600.0, \"u\": 7675.0, \"inv\": 8000.0, \"t\": false}, {\"l\": \"Arch - Conditional Use (Hourly)\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Arch - Construction Administration (Hourly)\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["P25675", "Industrial", "The Back Nine - Gibsonia", ["Drew"], [], "", false, "", null, null, false, "[]"],
+  ["26008", "Industrial", "Lafayette Paint Colors", ["Ashley", "David"], [], "SD", false, "", 460, 460.0, false, "[{\"l\": \"Schematic Design\", \"c\": 0.0, \"u\": 460.0, \"inv\": 460.0, \"t\": false}]"],
+  ["26157", "Industrial", "Clearview McMurray Branch", ["Ashley", "David"], [], "SD", true, "SD/S1: 3/15/2026 - 4/8/2026 (hourly) CD/S3: 4/8/2026 - 5/8/2026", null, null, false, "[]"],
+  ["25658", "Industrial", "CCC Calos LOD", ["Ashley", "David"], [], "LOD", false, "", 881.25, 881.25, false, "[{\"l\": \"1.1 - Schematic Design\", \"c\": 0.0, \"u\": 881.25, \"inv\": 881.25, \"t\": false}]"],
+  ["26100", "Industrial", "Waterdam LOD", ["David", "Ashley"], [], "LOD", false, "", null, null, false, "[]"],
+  ["26108", "Industrial", "CCC 220 Dal Tile LOD", ["Ashley", "David"], [], "LOD", false, "", null, null, false, "[]"],
+  ["P26117", "Industrial", "Twin Bridges - 6640 Frankstown Self Storage", ["Drew", "David"], ["Claitman"], "Proposal", true, "", null, null, false, "[]"],
+  ["25038.2", "Industrial", "GVP Condition Assessment", ["David", "Drew"], [], "Assessment", true, "", 8200, null, false, "[{\"l\": \"Conditions Assessment\", \"c\": 8200.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["P26172", "Industrial", "Assumption Greek Orthodox Church Expansion Project", ["David", "Nick", "Miki"], [], "Proposal", true, "", null, null, false, "[]"],
+  ["23192", "ONTO", "MA+e Fertility - Prototype", ["Miki"], [], "Hold", false, "", 71300, 21815.0, false, "[{\"l\": \"1.1 - Programming - LGA\", \"c\": 16500.0, \"u\": 12960.0, \"inv\": 15675.0, \"t\": false}, {\"l\": \"2.1 - Prototype Arch & Interiors DD - LGA\", \"c\": 54800.0, \"u\": 8855.0, \"inv\": 32880.0, \"t\": false}]"],
+  ["23393", "ONTO", "MA+e Fertility – Minneapolis, MN", ["Miki"], [], "Hold", false, "", null, null, false, "[]"],
+  ["24185", "ONTO", "Mate Fayetteville, AR", ["Miki"], [], "Hold", false, "", null, null, false, "[]"],
+  ["24565", "ONTO", "Mate Flagship - Parker, CO", ["Miki"], [], "Hold", false, "", 7540, 21802.5, false, "[{\"l\": \"1.0 - CD\", \"c\": 0.0, \"u\": 14262.5, \"inv\": null, \"t\": false}, {\"l\": \"XTR\", \"c\": 0.0, \"u\": 7540.0, \"inv\": 24285.0, \"t\": false}]"],
+  ["25674", "ONTO", "Onto Chicago Furniture", ["Miki"], [], "Pending", true, "", null, null, false, "[]"],
+  ["21072", "Other", "Falcon Plastic Surgery", ["Miki"], [], "Pending", true, "", 150.72, null, false, "[{\"l\": \"RE.1 - Reimbursable Expenses (HISTORIC)\", \"c\": 150.72, \"u\": null, \"inv\": 150.72, \"t\": false}]"],
+  ["25642", "Other", "MHEDS - Erie", ["Drew", "Ashley"], ["HF Lenz"], "CD", true, "CD/S3: 3/10/2026 - 5/10/2026 CA/S4: 6/1/2026 - 9/1/2026", 57000, 28837.5, false, "[{\"l\": \"Existing Conditions Documentation\", \"c\": 4000.0, \"u\": 6513.75, \"inv\": 4000.0, \"t\": false}, {\"l\": \"Schematic Design\", \"c\": 7000.0, \"u\": 18118.75, \"inv\": 7000.0, \"t\": false}, {\"l\": \"Construction Documents / Permitting\", \"c\": 28000.0, \"u\": 4205.0, \"inv\": null, \"t\": false}, {\"l\": \"Interior Design\", \"c\": 5000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Bidding\", \"c\": 2000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Administration\", \"c\": 11000.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25387", "SBH", "SBH Rochester MN", ["Nick", "David"], [], "Hold", false, "", 1430, 1430.0, false, "[{\"l\": \"1.0 - Due Diligence\", \"c\": 0.0, \"u\": 1430.0, \"inv\": 1430.0, \"t\": false}]"],
+  ["25299", "SBH", "Sunshine Ephrata PA Due Diligence", ["Nick", "Gary"], ["Osborn"], "CA", true, "CA/S4: 9/1/2025 - 4/30/2026", 112715, 76482.5, false, "[{\"l\": \"1.1 - Due Diligence - LGA\", \"c\": 13315.0, \"u\": 13315.0, \"inv\": 25731.88, \"t\": false}, {\"l\": \"3.1 - Phase 1 CA - LGA\", \"c\": 22000.0, \"u\": 19126.25, \"inv\": 20200.0, \"t\": false}, {\"l\": \"2.1 - Phase 1 CDs - LGA\", \"c\": 25000.0, \"u\": 27500.0, \"inv\": 25000.0, \"t\": false}, {\"l\": \"5.1 - Phase 2 CA - LGA\", \"c\": 22000.0, \"u\": 4337.5, \"inv\": 6000.0, \"t\": false}, {\"l\": \"4.1 - Phase 2 CDs - LGA\", \"c\": 25000.0, \"u\": 12203.75, \"inv\": 25000.0, \"t\": false}, {\"l\": \"6.1 - ASAF 1 - Osborn\", \"c\": 5400.0, \"u\": null, \"inv\": 5400.0, \"t\": false}]"],
+  ["25468", "SBH", "SBH Middlesex PA Due Diligence", ["Gary", "Nick", "Ashley"], ["Osborn"], "SD", true, "SD/S1: 11/25/2025 - 3/23/2026 (hourly) DD/S2: 3/23/2026 - 7/3/2026 (hourly)", null, null, false, "[]"],
+  ["25453", "St. Clair Health", "SCMG Peters X-Ray Fit-Out", ["Nick"], ["Barton"], "CA", false, "", 12300, 7052.5, false, "[{\"l\": \"1.1 - Existing Conditions/SD - LGA\", \"c\": 1200.0, \"u\": 1537.5, \"inv\": 1200.0, \"t\": false}, {\"l\": \"2.1- CD's - LGA\", \"c\": 7800.0, \"u\": 3595.0, \"inv\": 7800.0, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 3300.0, \"u\": 1920.0, \"inv\": 3300.0, \"t\": false}]"],
+  ["24219", "St. Clair Health", "SCMG Robinson Test Fits", ["Steve", "Nick"], [], "Hold", false, "", 9000, 3907.5, false, "[{\"l\": \"1.0 - Test Fit\", \"c\": 9000.0, \"u\": 3907.5, \"inv\": null, \"t\": false}]"],
+  ["23073", "UPMC", "UPMC Montefiore Radiopharmacy", ["Nick", "Miki"], ["A&S", "B&H", "FMG"], "Closeout", false, "", 478732.5, 49173.75, false, "[{\"l\": \"3.0 - Permitting\", \"c\": 18000.0, \"u\": 1802.5, \"inv\": 18000.0, \"t\": false}, {\"l\": \"2.0 - Construction documents\", \"c\": 137000.0, \"u\": 1082.5, \"inv\": 137000.0, \"t\": false}, {\"l\": \"1.0 - Schematic Design, design development - LGA\", \"c\": 103000.0, \"u\": null, \"inv\": 103000.0, \"t\": false}, {\"l\": \"10.1 - Amendment 4 - Architectural\", \"c\": 12000.0, \"u\": 630.0, \"inv\": 12000.0, \"t\": false}, {\"l\": \"11.1 - Amendment 5 - Architectural\", \"c\": 8685.0, \"u\": 4905.0, \"inv\": 8685.0, \"t\": false}, {\"l\": \"12.1 - Amendment 6 - Architectural\", \"c\": 9844.5, \"u\": 90.0, \"inv\": 9844.5, \"t\": false}, {\"l\": \"5.0 - Contract Amendment #1\", \"c\": 8800.0, \"u\": null, \"inv\": 8800.0, \"t\": false}, {\"l\": \"6.0 - Contract Amendment # 2\", \"c\": 61903.0, \"u\": null, \"inv\": 61903.0, \"t\": false}, {\"l\": \"7.1 - Construction Administration - Architectural\", \"c\": 85000.0, \"u\": 39440.0, \"inv\": 85000.0, \"t\": false}, {\"l\": \"8.1 - Close-out - Architectural\", \"c\": 1000.0, \"u\": 715.0, \"inv\": 750.0, \"t\": false}, {\"l\": \"9.1 - VE - Architectural\", \"c\": 8000.0, \"u\": null, \"inv\": 8000.0, \"t\": false}, {\"l\": \"13.0 - Amendment 7 - Specialty Engineering Added CA\", \"c\": 25500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR.2 - Duct Reinforcement - LGA\", \"c\": 0.0, \"u\": 508.75, \"inv\": null, \"t\": false}]"],
+  ["23143", "UPMC", "UPMC Jameson Hospital - Behavioral Health Unit", ["Miki", "Chris"], ["Osborn", "B&H"], "CA", true, "CA/S4: 10/24/2024 - 12/31/2027", 188610, 270090.0, false, "[{\"l\": \"7.0 - Renderings - LGA\", \"c\": 8000.0, \"u\": 6066.25, \"inv\": 8000.0, \"t\": false}, {\"l\": \"5.1 - Construction Administration - LGA\", \"c\": 30625.0, \"u\": 123921.25, \"inv\": 25840.0, \"t\": false}, {\"l\": \"3.1 - Construction Documents - LGA\", \"c\": 74000.0, \"u\": 117550.0, \"inv\": 74000.0, \"t\": false}, {\"l\": \"4.1 - Procurement - LGA\", \"c\": 6000.0, \"u\": 22460.0, \"inv\": 6000.0, \"t\": false}, {\"l\": \"6.1 - Close Out - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 - Schematic Design - LGA\", \"c\": 16300.0, \"u\": null, \"inv\": 16300.0, \"t\": false}, {\"l\": \"2.1 - Design Development - LGA\", \"c\": 32600.0, \"u\": null, \"inv\": 32600.0, \"t\": false}, {\"l\": \"8.5 - Amendment 2 - Digital Display - LGA\", \"c\": 1085.0, \"u\": null, \"inv\": 1085.0, \"t\": false}, {\"l\": \"8.7 - Amendment 2 - Additional CA - LGA\", \"c\": 13920.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"8.6 - Amendment 2 - Excessive Door HW Review - LGA\", \"c\": 2580.0, \"u\": null, \"inv\": 2580.0, \"t\": false}, {\"l\": \"8.8 - Amendment 2 - HWR & 4th Fl AHU - LGA\", \"c\": 3000.0, \"u\": 92.5, \"inv\": 3000.0, \"t\": false}]"],
+  ["24221", "UPMC", "UPMC Passavant Mobile PET/CT Scan", ["Steve", "Nick"], ["FMRW"], "Hold", false, "", 28000, 30895.0, false, "[{\"l\": \"2.1 | Phase Two - Architecture\", \"c\": 20000.0, \"u\": 26025.0, \"inv\": null, \"t\": false}, {\"l\": \"3.1 | Construction Administration - Architecture\", \"c\": 4000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 | Phase One - Architecture\", \"c\": 4000.0, \"u\": 4870.0, \"inv\": null, \"t\": false}]"],
+  ["24302", "UPMC", "UPMC - Jameson AHU Replacement", ["Nick", "Miki"], ["B&H", "A&S"], "Closeout", false, "", 44977.5, 37425.0, false, "[{\"l\": \"1.1 Schematic Design - Architecture\", \"c\": 4500.0, \"u\": 1427.5, \"inv\": 4500.0, \"t\": false}, {\"l\": \"3.1 Construction Documentation - Architecture\", \"c\": 15300.0, \"u\": 11265.0, \"inv\": 15300.0, \"t\": false}, {\"l\": \"5.1 Construction Administration - Architecture\", \"c\": 9000.0, \"u\": 17683.75, \"inv\": 9000.0, \"t\": false}, {\"l\": \"6.1 Closeout - Architecture\", \"c\": 500.0, \"u\": null, \"inv\": 400.0, \"t\": false}, {\"l\": \"4.1 Bidding - Architecture\", \"c\": 1500.0, \"u\": 2662.5, \"inv\": 1500.0, \"t\": false}, {\"l\": \"2.1 Design Development - Architecture\", \"c\": 4800.0, \"u\": null, \"inv\": 4800.0, \"t\": false}, {\"l\": \"EX - XTR (LGA)\", \"c\": 0.0, \"u\": 4386.25, \"inv\": null, \"t\": false}, {\"l\": \"7.1 Amendment 1 - Architecture\", \"c\": 3500.0, \"u\": null, \"inv\": 3500.0, \"t\": false}, {\"l\": \"8.1 Amendment 2 - Temp AHU - LGA\", \"c\": 1812.5, \"u\": null, \"inv\": 1812.5, \"t\": false}, {\"l\": \"9.1 Amendment 3 - AHU Install - LGA\", \"c\": 4065.0, \"u\": null, \"inv\": 4065.0, \"t\": false}]"],
+  ["24234", "UPMC", "UPMC - Jameson Fire Alarm Upgrade", ["Nick", "Miki"], ["A&S"], "Closeout", true, "CA/S4: 5/5/2025 - 4/15/2026", 28287.5, 36361.25, false, "[{\"l\": \"3.1 | Construction Administration - Architecture\", \"c\": 5750.0, \"u\": 11455.0, \"inv\": 5750.0, \"t\": false}, {\"l\": \"2.1 | Procurement - Architecture\", \"c\": 460.0, \"u\": 2155.0, \"inv\": 460.0, \"t\": false}, {\"l\": \"1.1 | Construction Documents - Architecture\", \"c\": 16790.0, \"u\": 19778.75, \"inv\": 16790.0, \"t\": false}, {\"l\": \"5.1 | Amendment 1 - Bulletins 1-4 - LGA\", \"c\": 3287.5, \"u\": null, \"inv\": 3287.5, \"t\": false}, {\"l\": \"5.2 | Amendment 1 - Extended CA\", \"c\": 2000.0, \"u\": 2972.5, \"inv\": 1750.0, \"t\": false}]"],
+  ["24376.1", "UPMC", "UPMC Somerset RF EQ Replacement", ["Chris", "Miki"], ["HF Lenz", "Gatter & Diehl"], "CA", true, "CA/S4: 6/23/2026 - 10/27/2026", 30800, 39352.5, false, "[{\"l\": \"1.1 - SD - LGA\", \"c\": 4000.0, \"u\": 615.0, \"inv\": 4000.0, \"t\": false}, {\"l\": \"2.1 - DD - LGA\", \"c\": 8500.0, \"u\": 10185.0, \"inv\": 8500.0, \"t\": false}, {\"l\": \"3.1 - CD - LGA\", \"c\": 14400.0, \"u\": 27488.75, \"inv\": 14400.0, \"t\": false}, {\"l\": \"4.1 - Procurement - LGA\", \"c\": 3900.0, \"u\": 1063.75, \"inv\": null, \"t\": false}]"],
+  ["24424", "UPMC", "UPMC MCK00 – Latterman Center Renovation", ["Miki"], ["Osborn"], "Hold", false, "", null, null, false, "[]"],
+  ["25006", "UPMC", "CHP RF Equipment Replacement / Big Blue", ["Nick", "Miki"], ["Osborn", "B&H"], "CA", true, "CA/S4: 2/1/2026 - 6/1/2026", 54400, 36852.5, false, "[{\"l\": \"1.1 - SD - LGA\", \"c\": 9000.0, \"u\": 11917.5, \"inv\": 9000.0, \"t\": false}, {\"l\": \"2.1 - DD - LGA\", \"c\": 6450.0, \"u\": 1055.0, \"inv\": 6450.0, \"t\": false}, {\"l\": \"3.1 - CD - LGA\", \"c\": 9450.0, \"u\": 5368.75, \"inv\": 9450.0, \"t\": false}, {\"l\": \"4.1 - Procurement - LGA\", \"c\": 1500.0, \"u\": 4661.25, \"inv\": 1500.0, \"t\": false}, {\"l\": \"5.1 - Amendment 1 - LGA\", \"c\": 5000.0, \"u\": null, \"inv\": 5000.0, \"t\": false}, {\"l\": \"7.1 - Amendment 2 - Big Blue - CD - LGA\", \"c\": 5000.0, \"u\": 4492.5, \"inv\": 5000.0, \"t\": false}, {\"l\": \"6.1 - Amendment 2 - Big Blue - MEP Report - LGA\", \"c\": 1000.0, \"u\": null, \"inv\": 1000.0, \"t\": false}, {\"l\": \"8.1 - Amendment 2 - R/F - CD - LGA\", \"c\": 1000.0, \"u\": null, \"inv\": 1000.0, \"t\": false}, {\"l\": \"10.1 - Amendment 2 - R/F - Closeout - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"9.1 - Amendment 2 - R/F - CA - LGA\", \"c\": 10000.0, \"u\": 7923.75, \"inv\": 10000.0, \"t\": false}, {\"l\": \"11.1 - Amendment 3 - Big Blue CA - LGA\", \"c\": 3000.0, \"u\": 323.75, \"inv\": null, \"t\": false}, {\"l\": \"12.1 - Amendment 3 - Big Blue Close-Out - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"13.1 - Amendment 3 - Big Blue Re-Seal - LGA\", \"c\": 2000.0, \"u\": 1110.0, \"inv\": 2000.0, \"t\": false}]"],
+  ["25258", "UPMC", "OMB – Expand Research Lab", ["Miki", "Ashley"], [], "CA", false, "", 9500, 19461.25, false, "[{\"l\": \"1.1 - SD - LGA\", \"c\": 3100.0, \"u\": 9645.0, \"inv\": 3100.0, \"t\": false}, {\"l\": \"2.1 - CD - LGA\", \"c\": 4000.0, \"u\": 7490.0, \"inv\": 4000.0, \"t\": false}, {\"l\": \"3.1 - Procurement - LGA\", \"c\": 800.0, \"u\": 826.25, \"inv\": 800.0, \"t\": false}, {\"l\": \"4.1 - CA - LGA\", \"c\": 1600.0, \"u\": 1500.0, \"inv\": null, \"t\": false}]"],
+  ["23073.3", "UPMC", "MUH Roof Replacement", ["Chris", "Miki"], ["A&S", "B&H"], "CA", true, "CA/S4: 4/1/2026 - 9/1/2026", null, null, false, "[]"],
+  ["25301", "UPMC", "Magee Fluoro 1 Replacement", ["Nick", "Miki"], ["CJL", "B&H"], "CA", true, "CA/S4: 10/1/2025 - 4/15/2026", 39900, 33852.5, false, "[{\"l\": \"1.1 - SD - LGA\", \"c\": 9000.0, \"u\": 4370.0, \"inv\": 9000.0, \"t\": false}, {\"l\": \"2.1 - DD - LGA\", \"c\": 6450.0, \"u\": 6812.5, \"inv\": 6450.0, \"t\": false}, {\"l\": \"3.1 - CD - LGA\", \"c\": 10450.0, \"u\": 6680.0, \"inv\": 10450.0, \"t\": false}, {\"l\": \"4.1 -  Procurement - LGA\", \"c\": 1500.0, \"u\": 2460.0, \"inv\": 1500.0, \"t\": false}, {\"l\": \"5.1 - CA - LGA\", \"c\": 7000.0, \"u\": 13530.0, \"inv\": 5500.0, \"t\": false}, {\"l\": \"6.1 - Close-Out - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"7.0 - Amendment 1 - Added CA - LGA\", \"c\": 5000.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25467", "UPMC", "Beford RF", ["Chris", "Miki"], ["CJL"], "CA", true, "CA/S4: 5/15/2026 - 9/11/2026", 45900, 64285.0, false, "[{\"l\": \"1.1 - Schematic Design - LGA\", \"c\": 9400.0, \"u\": 9363.75, \"inv\": 9400.0, \"t\": false}, {\"l\": \"2.1 - Design Development - LGA\", \"c\": 8500.0, \"u\": 2011.25, \"inv\": 8500.0, \"t\": false}, {\"l\": \"3.1 - Construction Documents - LGA\", \"c\": 14600.0, \"u\": 51615.0, \"inv\": 14600.0, \"t\": false}, {\"l\": \"4.1 - Procurement - LGA\", \"c\": 3900.0, \"u\": 1295.0, \"inv\": null, \"t\": false}, {\"l\": \"5.1 - Construction Administration - LGA\", \"c\": 9000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"6.1 - Close-out - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR1.1 - Additional Services - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25445", "UPMC", "University Center – Public Finishes and ADA TLTs", ["Miki"], [], "CA", true, "", 22000, 17028.75, false, "[{\"l\": \"1.1 - Exist. Cond. / SD - LGA\", \"c\": 5500.0, \"u\": 4052.5, \"inv\": 5500.0, \"t\": false}, {\"l\": \"2.1 - CD - LGA\", \"c\": 12500.0, \"u\": 6300.0, \"inv\": 12500.0, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 4000.0, \"u\": 6676.25, \"inv\": 3900.0, \"t\": false}, {\"l\": \"EX1.1 - Extra - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["25472", "UPMC", "Mercy Warehouse Demolition", ["Steve", "David"], ["Osborn", "FMG", "B&H"], "CD", true, "CA/S4: 4/15/2026 - 7/15/2026", 18100, 24323.75, false, "[{\"l\": \"Architectural - Civil Coord.\", \"c\": 4000.0, \"u\": 5280.0, \"inv\": 4000.0, \"t\": false}, {\"l\": \"Architectural - Demo Package\", \"c\": 14100.0, \"u\": 19043.75, \"inv\": 13100.0, \"t\": false}]"],
+  ["25566", "UPMC", "UPMC SHY Aiken Endocrinology Relocation", ["Nick", "Ashley", "Miki"], ["Osborn"], "SD", true, "CD/S3: 2/15/2026 - 4/8/2026", 14000, 5253.75, false, "[{\"l\": \"Construction Documents - LGA\", \"c\": 14000.0, \"u\": 5253.75, \"inv\": 2000.0, \"t\": false}]"],
+  ["25605", "UPMC", "UPMC SHY MOB HBC Conversions", ["Miki", "Chris"], ["Osborn"], "CA", true, "CA/S4: 4/1/2026 - 5/1/2026", 25500, 11591.25, false, "[{\"l\": \"HVI Suite 514 - SD - LGA\", \"c\": 5000.0, \"u\": 2173.75, \"inv\": 5000.0, \"t\": false}, {\"l\": \"MTA Suite 610 - SD - LGA\", \"c\": 5000.0, \"u\": 2930.0, \"inv\": 5000.0, \"t\": false}, {\"l\": \"HVI Suite 514 - CA - LGA\", \"c\": 2000.0, \"u\": 138.75, \"inv\": 1000.0, \"t\": false}, {\"l\": \"HVI Suite 514 - CD - LGA\", \"c\": 3500.0, \"u\": 1017.5, \"inv\": 3500.0, \"t\": false}, {\"l\": \"MTA Suite 610 - CA - LGA\", \"c\": 3000.0, \"u\": 1682.5, \"inv\": 1000.0, \"t\": false}, {\"l\": \"MTA Suite 610 - CD - LGA\", \"c\": 7000.0, \"u\": 3648.75, \"inv\": 7000.0, \"t\": false}]"],
+  ["25605.1", "UPMC", "UPMC SHY Gastroenterology", ["Chris", "Miki"], ["Osborn"], "SD", true, "CD/S3: 3/1/2026 - 6/1/2026", 22500, 14083.75, false, "[{\"l\": \"Schematic Design / Existing Conditions - LGA\", \"c\": 5500.0, \"u\": 9458.75, \"inv\": 5500.0, \"t\": false}, {\"l\": \"Construction Documents - LGA\", \"c\": 17000.0, \"u\": 3977.5, \"inv\": null, \"t\": false}, {\"l\": \"Construction Administration - LGA\", \"c\": 0.0, \"u\": 647.5, \"inv\": null, \"t\": false}]"],
+  ["25657", "UPMC", "UPMC CHP Forest Hills Relocation", ["Steve", "Miki", "Ashley"], ["Osborn"], "SD", true, "SD/S1: 11/1/2026 - 3/10/2026 CD/S3: 3/10/2026 - 4/15/2026", 29200, 20090.0, false, "[{\"l\": \"Schematic Design / Existing Conditions - LGA\", \"c\": 5140.0, \"u\": 20090.0, \"inv\": 5140.0, \"t\": false}, {\"l\": \"Design Development - LGA\", \"c\": 7900.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Documents - LGA\", \"c\": 15060.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Procurement - LGA\", \"c\": 1100.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Training\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["26046", "UPMC", "UPMC Aesthetic Plastic Surgery Relocation", ["Miki", "Chris", "Ashley"], ["Osborn"], "SD", true, "SD/S1: 3/1/2026 - 4/14/2026 DD/S2: 4/15/2026 - 5/12/2026 CD/S3: 5/13/2026 - 7/10/2026 CA/S4: 8/15/2026 - 2/15/2027", 54215, 20237.5, false, "[{\"l\": \"Schematic Design / Existing Conditions - LGA\", \"c\": 10400.0, \"u\": 20237.5, \"inv\": 5200.0, \"t\": false}, {\"l\": \"Design Development - LGA\", \"c\": 14265.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Documents - LGA\", \"c\": 25300.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Procurement - LGA\", \"c\": 4250.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Training\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
+  ["P26109", "UPMC", "UPMC Presbyterian", ["Miki", "Nick", "Steve"], [], "Proposal", true, "", null, null, false, "[]"],
+  ["P26171", "UPMC", "Pharmalogic UPMC MUH Radiopharmacy Dock Lift Study", ["Miki", "Nick"], ["Osborn", "B&H"], "Proposal", true, "", null, null, false, "[]"],
+  ["26185", "Industrial", "Misc. LOD File Gathering Cranberry Corporate Center Lafayette Plaza Waterdam", ["Ashley", "David"], [], "LOD", true, "", null, null, false, "[]"],
+].map(r => ({
+  id:r[0], client:r[1], name:r[2], team:r[3], consultants:r[4],
+  status:r[5], active:r[6], milestones:r[7],
+  contract:r[8], fees_used:r[9], hourly:r[10],
+  phases: typeof r[11]==='string' ? JSON.parse(r[11]) : (r[11]||[]),
+}));
+
+const STATUS_ORDER = ["Proposal","LOD","Pending","SD","Stage 2","Stage 3","Stage 4","DD","CD","CA","Hold","Closeout"];
+const STATUS_CFG = {
+  "Proposal":{color:"#7eb8c9",bg:"rgba(126,184,201,0.12)"},
+  "LOD":     {color:"#b0c87e",bg:"rgba(176,200,126,0.12)"},
+  "Pending": {color:"#888",   bg:"rgba(136,136,136,0.1)"},
+  "SD":      {color:"#c8a96e",bg:"rgba(200,169,110,0.12)"},
+  "Stage 2": {color:"#c8a96e",bg:"rgba(200,169,110,0.12)"},
+  "Stage 3": {color:"#e8b84b",bg:"rgba(232,184,75,0.12)"},
+  "Stage 4": {color:"#e0956a",bg:"rgba(224,149,106,0.12)"},
+  "DD":      {color:"#9e7ec8",bg:"rgba(158,126,200,0.12)"},
+  "CD":      {color:"#9e7ec8",bg:"rgba(158,126,200,0.15)"},
+  "CA":      {color:"#4caf7d",bg:"rgba(76,175,125,0.12)"},
+  "Hold":    {color:"#555e70",bg:"rgba(85,94,112,0.15)"},
+  "Closeout":{color:"#4caf7d",bg:"rgba(76,175,125,0.08)"},
+};
+const TEAM_COLORS = {
+  Steve:"#c8a96e",Nick:"#7eb8c9",Miki:"#c97e9a",
+  Gary:"#4caf7d",Drew:"#9e7ec8",Ashley:"#e8b84b",
+  Chris:"#7ec8b8",Bill:"#c8907e",David:"#b0c87e",
+};
+const CLIENT_COLORS = {
+  UPMC:"#4a90d9",AHN:"#00a0af",ABC:"#c8a96e",
+  Industrial:"#9e7ec8",SBH:"#4caf7d",Fresenius:"#e07b6a",
+  Familylinks:"#7eb8c9","St. Clair Health":"#e8b84b",
+  ONTO:"#c97e9a",Other:"#888",
+};
+const PHASES = [
+  {key:"es",  label:"ES",          color:"#7eb8c9"},
+  {key:"sd",  label:"SD / S1",     color:"#c8a96e"},
+  {key:"dd",  label:"DD / S2",     color:"#9e7ec8"},
+  {key:"cd",  label:"CD / S3",     color:"#9e7ec8"},
+  {key:"pm",  label:"Permitting",  color:"#7ec8b8"},
+  {key:"ca",  label:"CA / S4",     color:"#4caf7d"},
+  {key:"co",  label:"Closeout",    color:"#b0c87e"},
+  {key:"asaf",label:"ASAF",        color:"#e07b6a"},
+];
+
+const WEEKLY_SNAPSHOTS = [{
+  "week": "2026-04-05",
+  "projects": {
+    "25016": 11810.0,
+    "25017": 9690.0,
+    "25062": 0.0,
+    "25107": 1530.0,
+    "25108": 5985.0,
+    "25183": 34332.5,
+    "25214": 6051.25,
+    "25347": 29387.5,
+    "25348": 28680.0,
+    "25348.1": 4765.0,
+    "25361": 2432.5,
+    "25362": 5667.5,
+    "25362.1": 2425.0,
+    "25462": 7455.0,
+    "24537": 5707.5,
+    "23099": 38905.0,
+    "24142": 11660.0,
+    "24387": 35681.25,
+    "25051": 8437.5,
+    "25292": 30532.5,
+    "25293": 26345.0,
+    "25449": 87796.25,
+    "25533": 10717.5,
+    "25617": 8975.0,
+    "26071": 5396.25,
+    "26112": 1710.0,
+    "26115": 3888.75,
+    "25054": 74108.75,
+    "25054.1": 23258.75,
+    "24447": 1751.25,
+    "23086": 4088.75,
+    "25475": 22580.0,
+    "25508": 1360.0,
+    "25038.1": 980.0,
+    "25038.2": 0.0,
+    "24276": 54732.5,
+    "25110.1": 210967.5,
+    "21033": 320.0,
+    "21072": 0.0,
+    "25014": 1790.0,
+    "25014.1": 5622.5,
+    "22202.1": 75596.25,
+    "25319": 6161.25,
+    "25328": 35326.25,
+    "25642": 28837.5,
+    "22258.2": 3650.0,
+    "23192": 21815.0,
+    "23393.1": 67.5,
+    "24306": 0.0,
+    "24325": 0.0,
+    "25555": 2486.25,
+    "24565": 21802.5,
+    "25504": 18263.75,
+    "24134": 1792.5,
+    "25389": 6667.5,
+    "25658": 881.25,
+    "26008": 460.0,
+    "25243": 71672.5,
+    "20230": 24103.75,
+    "23331.1": 66191.25,
+    "24219": 3907.5,
+    "25453": 7052.5,
+    "25299": 76482.5,
+    "25320": 1200.0,
+    "25387": 1430.0,
+    "25676": 1992.5,
+    "26013": 19770.0,
+    "23073": 49173.75,
+    "23073.2": 22671.25,
+    "23143": 270090.0,
+    "23358": 155105.0,
+    "24221": 30895.0,
+    "24234": 36361.25,
+    "24287.1": 25116.25,
+    "24287.2": 8372.5,
+    "24302": 37425.0,
+    "24376.1": 39352.5,
+    "25006": 36852.5,
+    "25116": 6593.75,
+    "25117": 2012.5,
+    "25135": 3177.5,
+    "25258": 19461.25,
+    "25301": 33852.5,
+    "25445": 17028.75,
+    "25467": 64285.0,
+    "25472": 24323.75,
+    "25566": 5253.75,
+    "25605": 11591.25,
+    "25605.1": 14083.75,
+    "25657": 20090.0,
+    "26046": 20237.5,
+    "25534": 17911.25
+  }
+}];
+const LATEST_BT_WEEK = "2026-04-05";
+
+function parseDateShared(s) {
+  if (!s) return null;
+  if (s instanceof Date) return s;
+  if (typeof s !== 'string') return null;
+  var clean = s.replace(/\s*\([^)]*\)/g, '').replace(/(\d+\/\d+)-\d+(\/\d+)/, '$1$2').trim();
+  var pts = clean.split('/');
+  if (pts.length < 3) return null;
+  try {
+    var mo = parseInt(pts[0]), dy = parseInt(pts[1]);
+    var yr = pts[2].length === 2 ? 2000 + parseInt(pts[2]) : parseInt(pts[2]);
+    return new Date(yr, mo - 1, dy);
+  } catch(e) { return null; }
+}
+
+function computePace(p) {
+  if (!p.contract || !p.fees_used || !p.milestones) return null;
+  var today = new Date();
+  var dateRe = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
+  var allDates = [], dm;
+  while ((dm = dateRe.exec(p.milestones)) !== null) {
+    var pd = parseDateShared(dm[1]);
+    if (pd) allDates.push(pd);
+  }
+  if (allDates.length < 2) return null;
+  var projStart = new Date(Math.min.apply(null, allDates));
+  var projEnd   = new Date(Math.max.apply(null, allDates));
+  if (today < projStart || today > projEnd) return null;
+  var totalDays   = (projEnd - projStart) / 86400000;
+  var elapsedDays = (today - projStart) / 86400000;
+  var pctElapsed  = elapsedDays / totalDays;
+  var anticipated = p.contract * pctElapsed;
+  var actual      = p.fees_used || 0;
+  var delta       = actual - anticipated;
+  var deltaPct    = Math.round((delta / p.contract) * 100);
+  return {
+    anticipated: Math.round(anticipated), actual: Math.round(actual),
+    delta: Math.round(delta), deltaPct: deltaPct,
+    pctElapsed: Math.round(pctElapsed * 100)
+  };
+}
+
+function PaceBadge(props) {
+  try {
+    var pace = computePace(props.project);
+    if (!pace) return null;
+    var behind = pace.delta > 0;
+    if (Math.abs(pace.deltaPct) < 5) return <span style={{fontSize:9,color:"#4caf7d",marginTop:2,display:"block"}}>on pace</span>;
+    return <span style={{fontSize:9,color:behind?"#e07b6a":"#4caf7d",marginTop:2,display:"block"}}>{behind?"ahead":"behind"} {Math.abs(pace.deltaPct)}%</span>;
+  } catch(e) { return null; }
+}
+
+function PacePanel(props) {
+  try {
+    var pace = computePace(props.project);
+    if (!pace) return null;
+    var behind = pace.delta > 0;
+    var cl = behind ? "#e07b6a" : "#4caf7d";
+    var pt = pace.pctElapsed;
+    return (
+      <div style={{marginTop:16,padding:"14px 18px",background:"rgba(255,255,255,0.025)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace"}}>Weekly Burn Pacing</span>
+          <span style={{fontSize:11,color:cl,fontWeight:600}}>{behind?"Ahead of spend":"Behind pace"} ({Math.abs(pace.deltaPct)}%) | BT: {LATEST_BT_WEEK}</span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr",gap:8,marginBottom:12}}>
+          {[["Schedule",pt+"%","rgba(255,255,255,0.45)"],["Anticipated","$"+pace.anticipated.toLocaleString(),"rgba(255,255,255,0.45)"],["Actual","$"+pace.actual.toLocaleString(),cl],["Variance",(pace.delta>0?"+":"-")+"$"+Math.abs(pace.delta).toLocaleString(),cl]].map(([l,v,c])=>(
+            <div key={l} style={{background:"rgba(255,255,255,0.04)",borderRadius:8,padding:"10px 12px"}}>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.28)",textTransform:"uppercase",marginBottom:4}}>{l}</div>
+              <div style={{fontSize:14,fontWeight:700,color:c}}>{v}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{background:"rgba(255,255,255,0.05)",borderRadius:99,height:6,overflow:"hidden",marginBottom:4}}>
+          <div style={{width:pt+"%",height:"100%",background:cl,borderRadius:99}}/>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",fontSize:9,color:"rgba(255,255,255,0.2)"}}>
+          <span>Start</span>
+          <span style={{color:cl}}>Today {pt}% elapsed</span>
+          <span>End</span>
+        </div>
+      </div>
+    );
+  } catch(e) { return null; }
+}
+
+
+const BLENDED_RATE    = 168;
+const STUDIO_CAPACITY = 280; // 7 staff × 40h/week
+const fmtH = n => n == null ? "—" : `${Math.round(n).toLocaleString()}h`;
+
+function HoursPanel({totalContract, totalFeesUsed}) {
+  if (!totalContract) return <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>No fee data for projection</div>;
+  const budgeted  = totalContract  / BLENDED_RATE;
+  const burned    = (totalFeesUsed||0) / BLENDED_RATE;
+  const remaining = budgeted - burned;
+  const pct       = Math.min(100, Math.round(burned / budgeted * 100));
+  const over      = burned > budgeted;
+  const barColor  = over ? "#e07b6a" : pct >= 85 ? "#e8b84b" : "#7eb8c9";
+  // Velocity: if we know % fee used we can project total hours at completion
+  const projected = totalFeesUsed ? (burned / (totalFeesUsed / totalContract)) : budgeted;
+  return (
+    <div>
+      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Hours Projection <span style={{color:"rgba(255,255,255,0.15)",fontSize:9,letterSpacing:0}}>@ ${BLENDED_RATE}/hr blended</span></div>
+      <div style={{marginBottom:16}}>
+        <div style={{display:"flex",justifyContent:"space-between",marginBottom:6}}>
+          <span style={{fontSize:11,color:"rgba(255,255,255,0.35)",fontFamily:"'DM Mono',monospace"}}>hours burned</span>
+          <span style={{fontSize:13,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:barColor}}>{fmtH(burned)} <span style={{fontSize:11,color:"rgba(255,255,255,0.25)"}}>/ {fmtH(budgeted)}</span></span>
+        </div>
+        <div style={{background:"rgba(255,255,255,0.07)",borderRadius:99,height:6,overflow:"hidden",marginBottom:4}}>
+          <div style={{width:`${pct}%`,height:"100%",background:barColor,borderRadius:99}}/>
+        </div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",textAlign:"right"}}>{pct}% of budget</div>
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:6}}>
+        {[
+          ["Budgeted",   fmtH(budgeted),  "rgba(255,255,255,0.5)"],
+          ["Burned",     fmtH(burned),    barColor],
+          ["Remaining",  fmtH(remaining), remaining < 0 ? "#e07b6a" : "#4caf7d"],
+          ["Proj. Total",fmtH(projected), projected > budgeted ? "#e07b6a" : "rgba(255,255,255,0.4)"],
+        ].map(([l,v,c])=>(
+          <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontSize:11,color:"rgba(255,255,255,0.35)"}}>{l}</span>
+            <span style={{fontSize:13,fontFamily:"'DM Mono',monospace",fontWeight:500,color:c}}>{v}</span>
+          </div>
+        ))}
+      </div>
+      {over && <div style={{marginTop:10,padding:"6px 10px",background:"rgba(224,123,106,0.1)",border:"1px solid rgba(224,123,106,0.25)",borderRadius:8,fontSize:11,color:"#e07b6a"}}>⚠ {fmtH(Math.abs(remaining))} over hour budget</div>}
+    </div>
+  );
+}
+
+const fmt$ = n => !n ? "—" : n >= 1000 ? `$${(n/1000).toFixed(1)}K` : `$${n.toFixed(0)}`;
+const fmtFull$ = n => !n ? "—" : `$${n.toLocaleString("en-US",{maximumFractionDigits:0})}`;
+const cc = c => CLIENT_COLORS[c] || "#aaa";
+
+function Avatar({name, size=26}) {
+  const color = TEAM_COLORS[name] || "#aaa";
+  return <div title={name} style={{width:size,height:size,borderRadius:"50%",background:color+"22",border:`1.5px solid ${color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:size*0.38,fontWeight:600,color,fontFamily:"'DM Mono',monospace",flexShrink:0}}>{name[0]}</div>;
+}
+
+function Badge({status}) {
+  const cfg = STATUS_CFG[status]||{color:"#aaa",bg:"rgba(170,170,170,0.1)"};
+  return <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",fontWeight:500,color:cfg.color,background:cfg.bg,padding:"3px 8px",borderRadius:4,whiteSpace:"nowrap"}}>{status}</span>;
+}
+
+function StatCard({label,value,sub,accent}) {
+  return (
+    <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"16px 18px"}}>
+      <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:6}}>{label}</div>
+      <div style={{fontSize:28,fontWeight:700,color:accent||"#fff",fontFamily:"'Cormorant Garamond',serif",lineHeight:1}}>{value}</div>
+      {sub&&<div style={{fontSize:11,color:"rgba(255,255,255,0.3)",marginTop:3}}>{sub}</div>}
+    </div>
+  );
+}
+
+function PhaseBar({fee, used, done, label, color}) {
+  if (!fee) return null;
+  const pct = Math.min(100, Math.round((used||0)/fee*100));
+  const over = used > fee;
+  const barColor = over ? "#e07b6a" : color;
+  const budgetedH = Math.round(fee / BLENDED_RATE);
+  const burnedH   = Math.round((used||0) / BLENDED_RATE);
+  const diffH     = budgetedH - burnedH;
+  return (
+    <div style={{marginBottom:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:3}}>
+        <div style={{display:"flex",alignItems:"center",gap:6}}>
+          <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.4)"}}>{label}</span>
+          {done && <span style={{fontSize:9,color:"#4caf7d",fontFamily:"'DM Mono',monospace"}}>✓</span>}
+        </div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          {over && <span style={{fontSize:9,color:"#e07b6a",fontFamily:"'DM Mono',monospace"}}>OVER</span>}
+          <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:barColor}}>{fmt$(used)} / {fmt$(fee)}</span>
+        </div>
+      </div>
+      <div style={{background:"rgba(255,255,255,0.07)",borderRadius:99,height:4,overflow:"hidden",marginBottom:3}}>
+        <div style={{width:`${pct}%`,height:"100%",background:barColor,borderRadius:99}}/>
+      </div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+        <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.2)"}}>{burnedH}h / {budgetedH}h</span>
+        <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:over?"#e07b6a":diffH<=budgetedH*0.15?"#e8b84b":"rgba(255,255,255,0.2)"}}>{over?`+${Math.abs(diffH)}h over`:`${diffH}h left`}</span>
+      </div>
+    </div>
+  );
+}
+
+function FeeDonut({totalContract, totalFeesUsed}) {
+  if (!totalContract) return null;
+  const pct = Math.min(100, Math.round((totalFeesUsed||0)/totalContract*100));
+  const over = totalFeesUsed > totalContract;
+  const color = over ? "#e07b6a" : pct >= 85 ? "#e8b84b" : "#4caf7d";
+  const r = 20, circ = 2*Math.PI*r, dash = (pct/100)*circ;
+  return (
+    <div style={{display:"flex",alignItems:"center",gap:8}}>
+      <svg width={50} height={50} style={{transform:"rotate(-90deg)"}}>
+        <circle cx={25} cy={25} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={5}/>
+        <circle cx={25} cy={25} r={r} fill="none" stroke={color} strokeWidth={5} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"/>
+      </svg>
+      <div>
+        <div style={{fontSize:16,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color,lineHeight:1}}>{pct}%</div>
+        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace"}}>{over?"over budget":"fee used"}</div>
+      </div>
+    </div>
+  );
+}
+
+function MilestoneTimeline({milestones}) {
+  if (!milestones || !milestones.trim()) return null;
+  const fmtD = d => d instanceof Date ? d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}) : '';
+  const parseDate = s => {
+    if (!s) return null;
+    if (s instanceof Date) return s;
+    if (typeof s !== 'string') return null;
+    s = s.replace(/\s*\([^)]*\)/g,'').replace(/(\d+\/\d+)-\d+(\/\d+)/,'$1$2').trim();
+    const pts = s.split('/');
+    if (pts.length < 3) return null;
+    try { const [mo,d,yr]=pts; return new Date(yr.length===2?'20'+yr:yr, parseInt(mo)-1, parseInt(d)); }
+    catch(e) { return null; }
+  };
+  const labelRe = /\b(SD\/S1|DD\/S2|CD\/S3|CA\/S4|Stage\s*\d+[ab]?|ES|SD|DD|CD|CA|Closeout|ASAF|Permitting)\s*:/gi;
+  const dateRe  = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
+  const labelMatches = [...milestones.matchAll(labelRe)];
+  const parsed = labelMatches.map((lm, i) => {
+    const label  = lm[1].trim();
+    const segEnd = i+1 < labelMatches.length ? labelMatches[i+1].index : milestones.length;
+    const seg    = milestones.slice(lm.index + lm[0].length, segEnd);
+    const dates  = [...seg.matchAll(dateRe)].map(m => parseDate(m[1])).filter(Boolean);
+    return { label, start: dates[0]||null, end: dates[1]||null };
+  }).filter(p => p.start || p.end);
+  if (!parsed.length) return null;
+  const today = new Date();
+  const allDates = parsed.flatMap(p => [p.start, p.end]).filter(Boolean);
+  const minD = new Date(Math.min(...allDates));
+  const maxD = new Date(Math.max(...allDates));
+  const span = maxD - minD || 1;
+  const posPct = d => d instanceof Date ? Math.min(100, Math.max(0, ((d-minD)/span)*100)) : null;
+  const todayPct = posPct(today);
+  const SC = {"SD/S1":"#c8a96e","DD/S2":"#9e7ec8","CD/S3":"#e8b84b","CA/S4":"#4caf7d","Stage 1":"#7eb8c9","Stage 2":"#c8a96e","Stage 3":"#e8b84b","Stage 3a":"#e8b84b","Stage 3b":"#d4a030","Stage 4":"#4caf7d","Stage 4a":"#4caf7d","Stage 4b":"#68c99a","CA":"#4caf7d","CD":"#9e7ec8","SD":"#c8a96e","Closeout":"#b0c87e"};
+  return (
+    <div style={{marginTop:16}}>
+      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:12}}>Phase Schedule</div>
+      <div style={{position:"relative",height:6,background:"rgba(255,255,255,0.06)",borderRadius:99,marginBottom:20}}>
+        {parsed.map((p,i) => {
+          if (!p.start) return null;
+          const l=posPct(p.start), w=p.end?posPct(p.end)-l:2, c=SC[p.label]||"#aaa", ia=p.start<=today&&p.end&&today<=p.end;
+          return <div key={i} title={p.label+': '+fmtD(p.start)+(p.end?' - '+fmtD(p.end):'')} style={{position:"absolute",left:l+"%",width:Math.max(2,w)+"%",height:"100%",background:c,borderRadius:99,opacity:ia?1:0.55}}/>;
+        })}
+        {todayPct>=0&&todayPct<=100&&(
+          <div style={{position:"absolute",left:todayPct+"%",top:-4,width:2,height:14,background:"rgba(255,255,255,0.7)",borderRadius:1,transform:"translateX(-50%)"}}>
+            <div style={{position:"absolute",top:-14,left:"50%",transform:"translateX(-50%)",fontSize:8,color:"rgba(255,255,255,0.5)",fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>today</div>
+          </div>
+        )}
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {parsed.map((p,i) => {
+          if (!p.start) return null;
+          const c=SC[p.label]||"#aaa", isPast=p.end&&today>p.end, isActive=p.start<=today&&p.end&&today<=p.end;
+          return (
+            <div key={i} style={{display:"grid",gridTemplateColumns:"70px 1fr",gap:6,alignItems:"center"}}>
+              <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:isActive?c:isPast?"rgba(255,255,255,0.2)":"rgba(255,255,255,0.4)",fontWeight:isActive?600:400}}>{p.label}</span>
+              <span style={{fontSize:9,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)"}}>{fmtD(p.start)}{p.end?" – "+fmtD(p.end):""}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+function OverBudgetView({projects}) {
+  const fmt$ = v => v == null ? "—" : "$" + Math.round(v).toLocaleString();
+  return (
+    <div>
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>
+          Projects where fees used are 75% or more of contracted amount — sorted by burn rate
+        </div>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+          {[
+            ["Fast Burn Projects", String(projects.length), "#e07b6a"],
+            ["Total Contracted", fmt$(projects.reduce((s,p)=>s+(p.contract||0),0)), "rgba(255,255,255,0.6)"],
+            ["Total Fees Used", fmt$(projects.reduce((s,p)=>s+(p.fees_used||0),0)), "#e07b6a"],
+            ["Avg Burn Rate", Math.round(projects.reduce((s,p)=>s+(p.fees_used/p.contract*100),0)/Math.max(1,projects.length))+"%", "#e07b6a"],
+          ].map(([l,v,c])=>(
+            <div key={l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,padding:"12px 16px",minWidth:150}}>
+              <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:4}}>{l}</div>
+              <div style={{fontSize:22,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:c}}>{v}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"80px 2fr 90px 90px 100px 100px 90px 120px",padding:"6px 12px",fontSize:10,letterSpacing:"0.12em",color:"rgba(255,255,255,0.22)",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+        <div>ID</div><div>Project</div><div>Client</div><div>Status</div><div>Contract</div><div>Used</div><div>Burn %</div><div>Remaining</div>
+      </div>
+      {projects.map((p,i) => {
+        const pct = Math.round(p.fees_used / p.contract * 100);
+        const overage = p.fees_used - p.contract;
+        const clientColor = CLIENT_COLORS[p.client] || "#aaa";
+        const pace = computePace(p);
+        return (
+          <div key={p.id+p.name} style={{display:"grid",gridTemplateColumns:"80px 2fr 90px 90px 100px 100px 90px 120px",padding:"10px 12px",borderRadius:8,alignItems:"center",borderBottom:"1px solid rgba(255,255,255,0.04)",background:i%2===0?"transparent":"rgba(255,255,255,0.015)"}}>
+            <div style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)"}}>{p.id}</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:500,lineHeight:1.3}}>{p.name}</div>
+              <div style={{display:"flex",gap:8,marginTop:2,alignItems:"center"}}>
+                {p.team.slice(0,3).map(t=><Avatar key={t} name={t} size={18}/>)}
+                {pace && <span style={{fontSize:9,color:pace.delta>0?"#e07b6a":"#4caf7d",marginLeft:4}}>{pace.delta>0?"ahead of spend":"behind pace"} {Math.abs(pace.deltaPct)}%</span>}
+              </div>
+            </div>
+            <div><span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:clientColor,background:clientColor+"18",padding:"2px 6px",borderRadius:4}}>{p.client}</span></div>
+            <div><Badge status={p.status}/></div>
+            <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.5)"}}>{fmt$(p.contract)}</div>
+            <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:"#e07b6a",fontWeight:600}}>{fmt$(p.fees_used)}</div>
+            <div style={{fontSize:13,fontFamily:"'DM Mono',monospace",color:"#e07b6a",fontWeight:700}}>{pct}%</div>
+            <div>
+              <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:overage>0?"#e07b6a":"rgba(255,255,255,0.4)",fontWeight:600}}>{overage>0?"+":""}{fmt$(overage)}</div>
+              <div style={{marginTop:4,background:"rgba(255,255,255,0.05)",borderRadius:99,height:3,overflow:"hidden"}}>
+                <div style={{width:Math.min(100,pct)+"%",height:"100%",background:pct>=100?"#e07b6a":pct>=85?"#e8b84b":"#4caf7d",borderRadius:99}}/>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  const [view, setView] = useState('active');
+  const [showActive, setShowActive] = useState(true);
+  const [search, setSearch]         = useState("");
+  const [filterClient, setFC]       = useState("All");
+  const [filterPerson, setFP]       = useState("All");
+  const [filterConsultant, setFCon] = useState("All");
+  const [filterStatus, setFS]       = useState("All");
+  const [filterOverBudget, setFOB]  = useState(false);
+  const [sortBy, setSort]           = useState("client");
+  const [expanded, setExpanded]     = useState(null);
+
+  const pool    = useMemo(()=>ALL_PROJECTS.filter(p=>p.active===showActive),[showActive])
+  const overBudgetProjects = useMemo(()=>ALL_PROJECTS.filter(p=>p.active && p.contract && p.fees_used && (p.fees_used/p.contract) >= 0.75).sort((a,b)=>{
+    const aPct = a.fees_used/a.contract, bPct = b.fees_used/b.contract;
+    return bPct - aPct;
+  }),[]);
+  const clients = useMemo(()=>["All",...Array.from(new Set(pool.map(p=>p.client))).sort()],[pool]);
+  const people      = ["All",...Object.keys(TEAM_COLORS).sort()];
+  const consultants = useMemo(()=>["All",...Array.from(new Set(ALL_PROJECTS.flatMap(p=>p.consultants||[]))).sort()],[]);
+  const statuses= ["All",...STATUS_ORDER];
+
+  const filtered = useMemo(()=>{
+    return pool.filter(p=>{
+      const q=search.toLowerCase();
+      if(q&&!p.name.toLowerCase().includes(q)&&!p.client.toLowerCase().includes(q)&&!p.id.toLowerCase().includes(q)&&!p.team.some(t=>t.toLowerCase().includes(q))) return false;
+      if(filterClient!=="All"&&p.client!==filterClient) return false;
+      if(filterPerson!=="All"&&!p.team.includes(filterPerson)) return false;
+      if(filterConsultant!=="All"&&!(p.consultants||[]).includes(filterConsultant)) return false;
+      if(filterStatus!=="All"&&p.status!==filterStatus) return false;
+      if(filterOverBudget&&!(p.contract&&p.fees_used&&p.fees_used>p.contract)) return false;
+      return true;
+    }).sort((a,b)=>{
+      if(sortBy==="client") return a.client.localeCompare(b.client)||a.name.localeCompare(b.name);
+      if(sortBy==="status") return STATUS_ORDER.indexOf(a.status)-STATUS_ORDER.indexOf(b.status);
+      if(sortBy==="name")   return a.name.localeCompare(b.name);
+      if(sortBy==="id")     return a.id.localeCompare(b.id);
+      return 0;
+    });
+  },[pool,search,filterClient,filterPerson,filterConsultant,filterStatus,filterOverBudget,sortBy]);
+
+  const active   = ALL_PROJECTS.filter(p=>p.active);
+  const inactive = ALL_PROJECTS.filter(p=>!p.active);
+  const inCA     = active.filter(p=>p.status==="CA").length;
+  const inCD     = active.filter(p=>p.status==="CD").length;
+  const props    = active.filter(p=>["Proposal","Pending","LOD"].includes(p.status)).length;
+  const feeP        = active.filter(p=>p.contract||p.fees_used);
+  const totalContract  = feeP.reduce((s,p)=>s+(p.hourly ? (p.fees_used||0) : (p.contract||0)),0);
+  const totalFeesUsed  = feeP.reduce((s,p)=>s+(p.fees_used||0),0);
+  const overBudget  = active.filter(p=>p.contract&&p.fees_used&&!p.hourly&&p.fees_used>p.contract);
+  const completedP        = ALL_PROJECTS.filter(p=>!p.active&&(p.contract||p.fees_used));
+  const completedContract = completedP.reduce((s,p)=>s+(p.hourly ? (p.fees_used||0) : (p.contract||0)),0);
+  const completedFeesUsed = completedP.reduce((s,p)=>s+(p.fees_used||0),0);
+
+  const weeklyProjects = useMemo(() => {
+    var today = new Date();
+    function parseD(s) {
+      if (!s) return null;
+      if (s instanceof Date) return s;
+      if (typeof s !== 'string') return null;
+      var clean = s.replace(/\s*\([^)]*\)/g, '').replace(/(\d+\/\d+)-\d+(\/\d+)/, '$1$2').trim();
+      var pts = clean.split('/');
+      if (pts.length < 3) return null;
+      try {
+        var mo = parseInt(pts[0]), dy = parseInt(pts[1]);
+        var yr = pts[2].length === 2 ? 2000 + parseInt(pts[2]) : parseInt(pts[2]);
+        return new Date(yr, mo - 1, dy);
+      } catch(e) { return null; }
+    }
+    function getProjectEnd(p) {
+      if (!p.milestones) return null;
+      var dateRe = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
+      var dates = [], dm;
+      while ((dm = dateRe.exec(p.milestones)) !== null) {
+        var d = parseD(dm[1]);
+        if (d) dates.push(d);
+      }
+      if (!dates.length) return null;
+      return new Date(Math.max.apply(null, dates));
+    }
+    var result = [];
+    active.forEach(function(p) {
+      if (!p.contract || !p.fees_used) return;
+      var endDate = getProjectEnd(p);
+      if (!endDate || endDate <= today) return;
+      var remaining = Math.max(0, p.contract - p.fees_used);
+      var weeksLeft = (endDate - today) / (7 * 24 * 60 * 60 * 1000);
+      if (weeksLeft <= 0) return;
+      var hrsPerWeek = (remaining / BLENDED_RATE) / weeksLeft;
+      result.push({
+        id: p.id, name: p.name, client: p.client, team: p.team,
+        status: p.status, isSub: false,
+        endDate: endDate,
+        weeksLeft: Math.round(weeksLeft * 10) / 10,
+        remainingHrs: Math.round(remaining / BLENDED_RATE),
+        hrsPerWeek: Math.round(hrsPerWeek * 10) / 10,
+      });
+    });
+    return result.sort(function(a, b) { return b.hrsPerWeek - a.hrsPerWeek; });
+  }, [active]);
+  const totalWeeklyHrs = weeklyProjects.reduce(function(s, p) { return s + p.hrsPerWeek; }, 0);
+  const capacityPct    = Math.round(totalWeeklyHrs / STUDIO_CAPACITY * 100);
+
+  const statusCounts = useMemo(()=>STATUS_ORDER.reduce((a,s)=>{a[s]=pool.filter(p=>p.status===s).length;return a;},{}), [pool]);
+  const personLoad   = useMemo(()=>Object.keys(TEAM_COLORS).map(n=>({name:n,count:pool.filter(p=>p.team.includes(n)).length})).sort((a,b)=>b.count-a.count),[pool]);
+  const resetFilters = ()=>{setSearch("");setFC("All");setFP("All");setFCon("All");setFS("All");setFOB(false);};
+
+  return (
+    <div style={{minHeight:"100vh",background:"#0d0f14",padding:"28px 24px"}}>
+
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-end",marginBottom:24}}>
+        <div>
+          <div style={{fontSize:10,letterSpacing:"0.18em",color:"rgba(200,169,110,0.6)",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:4}}>Healthcare Studio</div>
+          <h1 style={{fontSize:30,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",letterSpacing:"-0.01em"}}>Project Dashboard</h1>
+        </div>
+        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:8}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.25)",fontFamily:"'DM Mono',monospace"}}>
+            {new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
+          </div>
+          <div style={{display:"flex",background:"rgba(255,255,255,0.05)",borderRadius:8,padding:3,gap:3}}>
+            {[
+              {label:`Active (${active.length})`, v:"active"},
+              {label:`Inactive (${inactive.length})`, v:"inactive"},
+              {label:`Fast Burn (${overBudgetProjects.length})`, v:"overbudget"},
+            ].map(t=>(
+              <button key={t.v} onClick={()=>{
+                setView(t.v);
+                if(t.v==="active"){setShowActive(true);resetFilters();}
+                else if(t.v==="inactive"){setShowActive(false);resetFilters();}
+              }} style={{padding:"5px 14px",borderRadius:6,border:"none",
+                background:view===t.v?"rgba(200,169,110,0.2)":"transparent",
+                color:view===t.v?"#c8a96e":"rgba(255,255,255,0.35)",
+                fontSize:11,fontFamily:"'DM Mono',monospace",cursor:"pointer",transition:"all 0.2s"}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {view === "overbudget" && (
+        <OverBudgetView projects={overBudgetProjects} />
+      )}
+      {view !== "overbudget" && showActive && (
+        <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}}>
+          <StatCard label="Active Projects" value={active.length} sub="in studio" accent="#c8a96e"/>
+          <StatCard label="Construction Admin" value={inCA} sub={`${Math.round(inCA/active.length*100)}% of portfolio`} accent="#4caf7d"/>
+          <StatCard label="In CDs" value={inCD} sub="drawing production" accent="#9e7ec8"/>
+          <StatCard label="Proposals / Pending" value={props} sub="awaiting authorization" accent="#7eb8c9"/>
+        </div>
+      )}
+
+      {view !== "overbudget" && showActive && weeklyProjects.length > 0 && (
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 20px",marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14,flexWrap:"wrap",gap:12}}>
+            <div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:6}}>
+                Weekly Hours Required — {weeklyProjects.length} project{weeklyProjects.length!==1?"s":""} with dates & fees
+              </div>
+              <div style={{display:"flex",gap:24,alignItems:"baseline",flexWrap:"wrap"}}>
+                <div>
+                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d",lineHeight:1}}>{Math.round(totalWeeklyHrs)}h</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>hrs needed / week</div>
+                </div>
+                <div>
+                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:"rgba(255,255,255,0.4)",lineHeight:1}}>{STUDIO_CAPACITY}h</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>capacity (7 x 40h)</div>
+                </div>
+                <div>
+                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d",lineHeight:1}}>{capacityPct}%</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>of capacity</div>
+                </div>
+                {capacityPct > 100 && (
+                  <div style={{background:"rgba(224,123,106,0.12)",border:"1px solid rgba(224,123,106,0.3)",borderRadius:8,padding:"6px 12px"}}>
+                    <div style={{fontSize:12,fontWeight:600,color:"#e07b6a"}}>!! {Math.round(totalWeeklyHrs - STUDIO_CAPACITY)}h over capacity</div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:1}}>based on {weeklyProjects.length} tracked projects</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div style={{flex:1,maxWidth:220}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace"}}>studio load</span>
+                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d"}}>{capacityPct}%</span>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:99,height:6,overflow:"hidden"}}>
+                <div style={{width:`${Math.min(100,capacityPct)}%`,height:"100%",background:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"linear-gradient(90deg,#4caf7d,#7eb8c9)",borderRadius:99}}/>
+              </div>
+              <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"'DM Mono',monospace"}}>
+                {weeklyProjects.length} of {active.length} projects tracked
+              </div>
+            </div>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:4}}>
+            <div style={{display:"grid",gridTemplateColumns:"180px 100px 1fr 80px 80px 80px",gap:10,padding:"0 0 4px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+              {["Project","Client","","hrs/wk","Remaining","Weeks"].map((h,i)=>(
+                <span key={i} style={{fontSize:9,color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",textAlign:i>=3?"right":"left",textTransform:"uppercase",letterSpacing:"0.08em"}}>{h}</span>
+              ))}
+            </div>
+            {weeklyProjects.map((p,i) => {
+              const pct = Math.min(100, Math.round(p.hrsPerWeek / STUDIO_CAPACITY * 100));
+              const color = p.hrsPerWeek > 80 ? "#e07b6a" : p.hrsPerWeek > 40 ? "#e8b84b" : "#7eb8c9";
+              const clientColor = cc(p.client);
+              return (
+                <div key={p.id+p.name+i} style={{display:"grid",gridTemplateColumns:"180px 100px 1fr 80px 80px 80px",alignItems:"center",gap:10,padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                  <div style={{overflow:"hidden"}}>
+                    <div style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)",lineHeight:1.2}}>{p.id}</div>
+                    <div style={{fontSize:11,fontFamily:"'Cormorant Garamond',serif",color:"rgba(255,255,255,0.65)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",lineHeight:1.3}}>{p.name}</div>
+                  </div>
+                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:clientColor,background:clientColor+"18",padding:"1px 6px",borderRadius:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.client}</span>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <div style={{flex:1,background:"rgba(255,255,255,0.05)",borderRadius:99,height:4,overflow:"hidden"}}>
+                      <div style={{width:`${pct}%`,height:"100%",background:color,borderRadius:99}}/>
+                    </div>
+                  </div>
+                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color,textAlign:"right",fontWeight:600}}>{p.hrsPerWeek}h</span>
+                  <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)",textAlign:"right"}}>{p.remainingHrs}h</span>
+                  <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.2)",textAlign:"right"}}>{p.weeksLeft}wks</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {showActive && feeP.length > 0 && (
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 20px",marginBottom:12}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:12}}>Fee Overview</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+            {/* Active */}
+            <div style={{borderRight:"1px solid rgba(255,255,255,0.06)",paddingRight:16}}>
+              <div style={{fontSize:9,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",color:"#7eb8c9",marginBottom:8}}>Active — {feeP.length} projects</div>
+              <div style={{display:"flex",gap:20,alignItems:"baseline",flexWrap:"wrap",marginBottom:10}}>
+                {[["Contracted",totalContract,"#c8a96e"],["Used",totalFeesUsed,"#9e7ec8"],["Remaining",totalContract-totalFeesUsed,totalContract-totalFeesUsed<0?"#e07b6a":"#4caf7d"]].map(([l,v,c])=>(
+                  <div key={l}>
+                    <div style={{fontSize:20,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:c,lineHeight:1}}>{fmtFull$(v)}</div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>{l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace"}}>burn rate</span>
+                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:totalFeesUsed/totalContract>0.9?"#e07b6a":totalFeesUsed/totalContract>0.75?"#e8b84b":"#4caf7d"}}>{Math.round((totalFeesUsed||0)/(totalContract||1)*100)}%</span>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:99,height:5,overflow:"hidden",marginBottom:8}}>
+                <div style={{width:`${Math.min(100,Math.round((totalFeesUsed||0)/(totalContract||1)*100))}%`,height:"100%",background:"linear-gradient(90deg,#9e7ec8,#c8a96e)",borderRadius:99}}/>
+              </div>
+              {overBudget.length > 0 && (
+                <div style={{background:"rgba(224,123,106,0.1)",border:"1px solid rgba(224,123,106,0.25)",borderRadius:6,padding:"5px 10px"}}>
+                  <div style={{fontSize:11,fontWeight:600,color:"#e07b6a"}}>⚠ {overBudget.length} over budget</div>
+                  <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:1}}>{overBudget.map(p=>p.id).join(", ")}</div>
+                </div>
+              )}
+            </div>
+            {/* Completed */}
+            <div style={{paddingLeft:4}}>
+              <div style={{fontSize:9,letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)",marginBottom:8}}>Completed — {completedP.length} projects</div>
+              <div style={{display:"flex",gap:20,alignItems:"baseline",flexWrap:"wrap",marginBottom:10}}>
+                {[["Contracted",completedContract,"#c8a96e"],["Used",completedFeesUsed,"#9e7ec8"],["Variance",completedContract-completedFeesUsed,completedContract-completedFeesUsed<0?"#e07b6a":"#4caf7d"]].map(([l,v,c])=>(
+                  <div key={l}>
+                    <div style={{fontSize:20,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:c,lineHeight:1}}>{fmtFull$(v)}</div>
+                    <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>{l}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace"}}>avg utilization</span>
+                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:completedFeesUsed/completedContract>0.9?"#e07b6a":completedFeesUsed/completedContract>0.75?"#e8b84b":"#4caf7d"}}>{Math.round((completedFeesUsed||0)/(completedContract||1)*100)}%</span>
+              </div>
+              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:99,height:5,overflow:"hidden"}}>
+                <div style={{width:`${Math.min(100,Math.round((completedFeesUsed||0)/(completedContract||1)*100))}%`,height:"100%",background:"linear-gradient(90deg,rgba(158,126,200,0.5),rgba(200,169,110,0.5))",borderRadius:99}}/>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 18px"}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Projects by Phase</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+            {STATUS_ORDER.filter(s=>statusCounts[s]>0).map(s=>{
+              const cfg=STATUS_CFG[s]||{};
+              return <div key={s} onClick={()=>setFS(filterStatus===s?"All":s)} className="chip"
+                style={{display:"flex",alignItems:"center",gap:6,background:filterStatus===s?cfg.bg:"rgba(255,255,255,0.04)",border:`1px solid ${filterStatus===s?cfg.color:"rgba(255,255,255,0.08)"}`,borderRadius:8,padding:"4px 10px",cursor:"pointer"}}>
+                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:cfg.color||"#aaa"}}>{s}</span>
+                <span style={{fontSize:12,fontWeight:600,color:"#fff"}}>{statusCounts[s]}</span>
+              </div>;
+            })}
+          </div>
+        </div>
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 18px"}}>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.14em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Team Workload</div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {personLoad.filter(p=>p.count>0).map(p=>(
+              <div key={p.name} onClick={()=>setFP(filterPerson===p.name?"All":p.name)} className="chip" style={{display:"flex",alignItems:"center",gap:8,cursor:"pointer"}}>
+                <Avatar name={p.name} size={20}/>
+                <span style={{fontSize:12,color:"rgba(255,255,255,0.6)",width:52}}>{p.name}</span>
+                <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:99,height:4,overflow:"hidden"}}>
+                  <div style={{width:`${(p.count/20)*100}%`,maxWidth:"100%",height:"100%",background:TEAM_COLORS[p.name]||"#aaa",borderRadius:99,opacity:filterPerson===p.name?1:0.6}}/>
+                </div>
+                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.4)",width:20,textAlign:"right"}}>{p.count}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{display:"flex",gap:8,marginBottom:10,flexWrap:"wrap",alignItems:"center"}}>
+        <div style={{flex:1,minWidth:180,position:"relative"}}>
+          <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search projects, clients, team…"
+            style={{width:"100%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"7px 12px 7px 30px",color:"#fff",fontSize:13}}/>
+          <span style={{position:"absolute",left:10,top:"50%",transform:"translateY(-50%)",color:"rgba(255,255,255,0.25)",fontSize:13}}>⌕</span>
+        </div>
+        {[{val:filterClient,set:setFC,opts:clients,lbl:"Clients"},{val:filterPerson,set:setFP,opts:people,lbl:"People"},{val:filterConsultant,set:setFCon,opts:consultants,lbl:"Consultants"},{val:filterStatus,set:setFS,opts:statuses,lbl:"Statuses"}].map((f,i)=>(
+          <select key={i} value={f.val} onChange={e=>f.set(e.target.value)}
+            style={{background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.1)",borderRadius:8,padding:"7px 12px",color:f.val==="All"?"rgba(255,255,255,0.4)":"#fff",fontSize:12,fontFamily:"'DM Mono',monospace",cursor:"pointer"}}>
+            {f.opts.map(o=><option key={o} value={o} style={{background:"#1a1d24"}}>{o==="All"?`All ${f.lbl}`:o}</option>)}
+          </select>
+        ))}
+        <div style={{display:"flex",gap:3}}>
+          {["client","id","status","name"].map(s=>(
+            <button key={s} onClick={()=>setSort(s)} style={{padding:"6px 10px",borderRadius:6,border:"1px solid",borderColor:sortBy===s?"#c8a96e":"rgba(255,255,255,0.08)",background:sortBy===s?"rgba(200,169,110,0.1)":"transparent",color:sortBy===s?"#c8a96e":"rgba(255,255,255,0.3)",fontSize:10,fontFamily:"'DM Mono',monospace",cursor:"pointer",textTransform:"uppercase",letterSpacing:"0.08em"}}>{s}</button>
+          ))}
+        </div>
+        <span style={{fontSize:11,color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",whiteSpace:"nowrap"}}>{filtered.length}/{pool.length}</span>
+        <button onClick={()=>setFOB(!filterOverBudget)} style={{padding:"6px 12px",borderRadius:6,border:"1px solid",borderColor:filterOverBudget?"#e07b6a":"rgba(255,255,255,0.08)",background:filterOverBudget?"rgba(224,123,106,0.15)":"transparent",color:filterOverBudget?"#e07b6a":"rgba(255,255,255,0.3)",fontSize:10,fontFamily:"'DM Mono',monospace",cursor:"pointer",whiteSpace:"nowrap"}}>⚠ Over Budget{filterOverBudget?` (${overBudget.length})`:""}</button>
+      </div>
+
+{view !== "overbudget" && <React.Fragment>
+            <div style={{display:"grid",gridTemplateColumns:"80px 100px 2.5fr 90px 130px 140px",padding:"6px 12px",fontSize:10,letterSpacing:"0.12em",color:"rgba(255,255,255,0.22)",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+        <div>ID</div><div>Client</div><div>Project</div><div>Status</div><div>Team</div><div>Fee Tracking</div>
+      </div>
+
+      <div>
+        {filtered.map(p=>{
+          const isOpen = expanded===p.id+p.name;
+          const clientColor = cc(p.client);
+          const burnPct = p.contract && p.fees_used ? Math.round(p.fees_used/p.contract*100) : null;
+          const isHourly = p.hourly;
+          const over = p.fees_used > p.contract;
+          const hasPhase = false;
+          return (
+            <div key={p.id+p.name}>
+              <div className="row" onClick={()=>setExpanded(isOpen?null:p.id+p.name)}
+                style={{display:"grid",gridTemplateColumns:"80px 100px 2.5fr 90px 130px 140px",padding:"10px 12px",borderRadius:8,alignItems:"center",background:isOpen?"rgba(200,169,110,0.05)":"transparent",borderBottom:"1px solid rgba(255,255,255,0.04)",transition:"background 0.15s"}}>
+                <div style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)"}}>{p.id}</div>
+                <div><span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:clientColor,background:clientColor+"18",padding:"2px 7px",borderRadius:4}}>{p.client}</span></div>
+                <div>
+                  <div style={{fontSize:13,fontWeight:500,lineHeight:1.3}}>{p.name}</div>
+                  <PaceBadge project={p} />
+                </div>
+                <div><Badge status={p.status}/></div>
+                <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                  {p.team.slice(0,4).map(t=><Avatar key={t} name={t} size={24}/>)}
+                  {p.team.length>4&&<div style={{width:24,height:24,borderRadius:"50%",background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.15)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,color:"rgba(255,255,255,0.4)"}}>+{p.team.length-4}</div>}
+                </div>
+                <div>
+                  {(p.contract || p.fees_used) ? (
+                    <div>
+                      <div style={{display:"flex",justifyContent:"space-between",marginBottom:3,alignItems:"center"}}>
+                        <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.5)"}}>
+                          {fmt$(p.fees_used||0)}
+                          {p.contract && <span style={{color:"rgba(255,255,255,0.25)"}}> / {fmt$(p.contract)}</span>}
+                          {isHourly && <span style={{fontSize:9,color:"rgba(126,184,201,0.7)",marginLeft:4,fontFamily:"'DM Mono',monospace"}}>T&M</span>}
+                        </span>
+                        {!isHourly && burnPct!=null && <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:over?"#e07b6a":burnPct>=85?"#e8b84b":"#4caf7d"}}>{burnPct}%{over?" ⚠":""}</span>}
+                      </div>
+                      {!isHourly && p.contract && <div style={{background:"rgba(255,255,255,0.07)",borderRadius:99,height:3,overflow:"hidden"}}>
+                        <div style={{width:`${Math.min(100,burnPct||0)}%`,height:"100%",background:over?"#e07b6a":burnPct>=85?"#e8b84b":"#4caf7d",borderRadius:99}}/>
+                      </div>}
+                    </div>
+                  ) : (
+                    <div style={{fontSize:11,color:"rgba(255,255,255,0.18)",fontFamily:"'DM Mono',monospace"}}>no fee data</div>
+                  )}
+                </div>
+              </div>
+
+              {isOpen && (
+                <div style={{margin:"0 8px 8px",padding:"20px",background:"rgba(255,255,255,0.025)",borderRadius:"0 0 12px 12px",border:"1px solid rgba(200,169,110,0.15)",borderTop:"none",animation:"fadeIn 0.2s ease"}}>
+                  <div style={{display:"grid",gridTemplateColumns:"1.2fr 1.3fr 1fr 1fr 1fr",gap:16}}>
+                    <div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Project Details</div>
+                      {[["No",p.id,"#fff"],["Client",p.client,clientColor],["Status",p.status,(STATUS_CFG[p.status]||{}).color||"#aaa"]].map(([l,v,c])=>(
+                        <div key={l} style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginBottom:6}}>{l}: <span style={{color:c,fontWeight:500}}>{v}</span></div>
+                      ))}
+                      <div style={{marginTop:12}}>
+                        <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:8}}>Team</div>
+                        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                          {p.team.map(t=>(
+                            <div key={t} style={{display:"flex",alignItems:"center",gap:6}}>
+                              <Avatar name={t} size={22}/>
+                              <span style={{fontSize:12,color:"rgba(255,255,255,0.6)"}}>{t}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      {p.consultants&&p.consultants.length>0&&(
+                        <div style={{marginTop:12}}>
+                          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:6}}>Consultants</div>
+                          <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+                            {p.consultants.map(c=>(
+                              <span key={c} style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.5)",background:"rgba(255,255,255,0.06)",padding:"2px 8px",borderRadius:4}}>{c}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <MilestoneTimeline milestones={p.milestones}/>
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Fee by Phase</div>
+                      {p.phases && p.phases.length > 0 ? (
+                        <div style={{display:"flex",flexDirection:"column",gap:5}}>
+                          {p.phases.map((ph,i) => {
+                            const hasFee  = ph.c != null && ph.c > 0;
+                            const hasUsed = ph.u != null && ph.u > 0;
+                            const pct     = hasFee && hasUsed ? Math.min(100, Math.round(ph.u / ph.c * 100)) : null;
+                            const over    = hasFee && hasUsed && ph.u > ph.c;
+                            const color   = over ? "#e07b6a" : pct >= 85 ? "#e8b84b" : "#4caf7d";
+                            return (
+                              <div key={i}>
+                                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:2}}>
+                                  <span style={{fontSize:11,color:"rgba(255,255,255,0.6)",fontFamily:"'DM Mono',monospace",flex:1,paddingRight:8,lineHeight:1.3}}>
+                                    {ph.t && <span style={{color:"rgba(126,184,201,0.6)",marginRight:4,fontSize:9}}>T&M</span>}
+                                    {ph.l}
+                                  </span>
+                                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.4)",whiteSpace:"nowrap"}}>
+                                    {hasUsed ? `$${Math.round(ph.u).toLocaleString()}` : '—'}
+                                    {hasFee ? <span style={{color:"rgba(255,255,255,0.2)"}}> / ${Math.round(ph.c).toLocaleString()}</span> : null}
+                                    {pct != null && <span style={{marginLeft:6,color}}>{pct}%{over?' ⚠':''}</span>}
+                                  </span>
+                                </div>
+                                {hasFee && <div style={{background:"rgba(255,255,255,0.05)",borderRadius:99,height:2,overflow:"hidden"}}>
+                                  <div style={{width:`${Math.min(100,pct||0)}%`,height:"100%",background:color,borderRadius:99}}/>
+                                </div>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>No phase data in Big Time</div>
+                      )}
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Phase Schedule</div>
+                      {p.milestones ? (() => {
+                        const today = new Date();
+                        const parseDate = s => {
+                          if (!s) return null;
+                          if (typeof s !== 'string') return s instanceof Date ? s : null;
+                          s = s.replace(/\s*\([^)]*\)/g,'').replace(/(\d+\/\d+)-\d+(\/\d+)/,'$1$2').trim();
+                          const parts = s.split('/');
+                          if (parts.length < 3) return null;
+                          try { const [mo,d,yr]=parts; return new Date(yr.length===2?`20${yr}`:yr,parseInt(mo)-1,parseInt(d)); } catch(e){return null;}
+                        };
+                        const fmtD = d => d ? d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'}) : '—';
+                        const labelRe = /\b(SD\/S1|DD\/S2|CD\/S3|CA\/S4|Stage\s*\d+[ab]?|ES|SD|DD|CD|CA|Closeout|ASAF|Permitting|Report|CDs?)\s*:/gi;
+                        const dateRe  = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
+                        const matches = [...p.milestones.matchAll(labelRe)];
+                        if (!matches.length) return <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>No phase dates entered</div>;
+                        return (
+                          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                            {matches.map((lm,i) => {
+                              const label   = lm[1].trim();
+                              const segEnd  = i+1 < matches.length ? matches[i+1].index : p.milestones.length;
+                              const seg     = p.milestones.slice(lm.index+lm[0].length, segEnd);
+                              const dates   = [...seg.matchAll(dateRe)].map(m=>parseDate(m[1])).filter(Boolean);
+                              const start   = dates[0]||null;
+                              const end     = dates[1]||dates[0]||null;
+                              const isActive  = start && end && today >= start && today <= end;
+                              const isComplete= end && today > end;
+                              const isPending = !end || today < (start||end);
+                              const dotColor  = isActive ? "#e8b84b" : isComplete ? "#4caf7d" : "rgba(255,255,255,0.2)";
+                              const textColor = isActive ? "rgba(255,255,255,0.9)" : isComplete ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.55)";
+                              return (
+                                <div key={i} style={{display:"grid",gridTemplateColumns:"10px 70px 1fr",alignItems:"center",gap:8}}>
+                                  <div style={{width:8,height:8,borderRadius:"50%",background:dotColor,flexShrink:0}}/>
+                                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:dotColor,fontWeight:isActive?600:400}}>{label}</span>
+                                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:textColor}}>
+                                    {start&&end&&start.getTime()!==end.getTime() ? `${fmtD(start)} – ${fmtD(end)}` : end ? fmtD(end) : <span style={{color:"rgba(255,255,255,0.2)"}}>TBD</span>}
+                                    {isComplete && <span style={{marginLeft:6,fontSize:9,color:"#4caf7d"}}>✓</span>}
+                                    {isActive && <span style={{marginLeft:6,fontSize:9,color:"#e8b84b"}}>● active</span>}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })() : <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>No phase dates entered</div>}
+                    </div>
+                    <div>
+                      <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Fee Summary</div>
+                      {p.contract ? (
+                        <div>
+                          <FeeDonut totalContract={p.contract} totalFeesUsed={p.fees_used}/>
+                          <div style={{marginTop:14,display:"flex",flexDirection:"column",gap:6}}>
+                            {[["Contracted",p.contract,"rgba(255,255,255,0.6)"],["Used",p.fees_used,"#9e7ec8"],["Remaining",(p.contract||0)-(p.fees_used||0),(p.contract||0)-(p.fees_used||0)<0?"#e07b6a":"#4caf7d"]].map(([l,v,c])=>(
+                              <div key={l} style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                                <span style={{fontSize:12,color:"rgba(255,255,255,0.4)"}}>{l}</span>
+                                <span style={{fontSize:13,fontFamily:"'DM Mono',monospace",fontWeight:500,color:c}}>{fmtFull$(v)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {over&&<div style={{marginTop:10,padding:"6px 10px",background:"rgba(224,123,106,0.1)",border:"1px solid rgba(224,123,106,0.25)",borderRadius:8,fontSize:11,color:"#e07b6a"}}>⚠ Fee used exceeds contracted amount by {fmtFull$((p.fees_used||0)-(p.contract||0))}</div>}
+                        </div>
+                      ) : (
+                        <div style={{fontSize:12,color:"rgba(255,255,255,0.2)",fontStyle:"italic"}}>No fee data entered yet</div>
+                      )}
+                    </div>
+                    <div>
+                      <HoursPanel totalContract={p.contract} totalFeesUsed={p.fees_used}/>
+                    </div>
+                  </div>
+                  <PacePanel project={p} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {filtered.length===0&&<div style={{textAlign:"center",padding:"48px 0",color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",fontSize:13}}>No projects match your filters</div>}
+      </React.Fragment>}
+      <div style={{marginTop:20,fontSize:10,color:"rgba(255,255,255,0.1)",fontFamily:"'DM Mono',monospace",textAlign:"center"}}>
+        Click row to expand | BT synced 2026-04-05 | Dates from updated project sheet
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
