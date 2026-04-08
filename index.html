@@ -766,6 +766,239 @@ function WeeklyChangesView({data, period}) {
 }
 
 
+
+function getPhaseBarsGantt(milestones) {
+  if (!milestones) return [];
+  var labelRe = /\b(SD\/S1|DD\/S2|CD\/S3|CA\/S4|Stage\s*\d+[ab]?|ES|SD|DD|CD|CA|Closeout|ASAF|Permitting)\s*:/gi;
+  var matches = [];
+  var m;
+  while ((m = labelRe.exec(milestones)) !== null) {
+    matches.push({ label: m[1].trim(), index: m.index, len: m[0].length });
+  }
+  return matches.map(function(lm, i) {
+    var segEnd = i + 1 < matches.length ? matches[i + 1].index : milestones.length;
+    var seg = milestones.slice(lm.index + lm.len, segEnd);
+    var dates = [];
+    var dm;
+    var dRe = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
+    while ((dm = dRe.exec(seg)) !== null) {
+      var pd = parseDateShared(dm[1]);
+      if (pd) dates.push(pd);
+    }
+    return { label: lm.label, start: dates[0] || null, end: dates[1] || dates[0] || null };
+  }).filter(function(b) { return b.start; });
+}
+
+var GANTT_PHASE_CLR = {
+  "SD/S1": "#c8a96e", "DD/S2": "#9e7ec8", "CD/S3": "#e8b84b", "CA/S4": "#4caf7d",
+  "Stage 1": "#7eb8c9", "Stage 2": "#c8a96e",
+  "Stage 3": "#e8b84b", "Stage 3a": "#e8b84b", "Stage 3b": "#d4a030",
+  "Stage 4": "#4caf7d", "Stage 4a": "#4caf7d", "Stage 4b": "#68c99a",
+  "SD": "#c8a96e", "DD": "#9e7ec8", "CD": "#9e7ec8", "CA": "#4caf7d",
+  "Closeout": "#b0c87e", "ASAF": "#e07b6a", "Permitting": "#7ec8b8",
+};
+
+function CalendarView(props) {
+  var projects = props.projects;
+  var today = new Date();
+  var rangeState = React.useState('max');
+  var range = rangeState[0];
+  var setRange = rangeState[1];
+
+  var entries = React.useMemo(function() {
+    return projects.map(function(p) {
+      var bars = getPhaseBarsGantt(p.milestones);
+      var allD = bars.reduce(function(acc, b) {
+        if (b.start) acc.push(b.start);
+        if (b.end) acc.push(b.end);
+        return acc;
+      }, []);
+      var start = allD.length ? new Date(Math.min.apply(null, allD)) : null;
+      var end   = allD.length ? new Date(Math.max.apply(null, allD)) : null;
+      return { id: p.id, name: p.name, client: p.client, active: p.active,
+               contract: p.contract, fees_used: p.fees_used, hourly: p.hourly,
+               bars: bars, start: start, end: end };
+    }).filter(function(p) { return p.start; });
+  }, [projects]);
+
+  // Compute the full data extent for "max"
+  var dataMinRaw = entries.reduce(function(mn, p) {
+    return p.start && p.start < mn ? p.start : mn;
+  }, today);
+  var dataMaxRaw = entries.reduce(function(mx, p) {
+    return p.end && p.end > mx ? p.end : mx;
+  }, today);
+  var dataMax = new Date(dataMaxRaw.getFullYear(), dataMaxRaw.getMonth() + 2, 1);
+  // Apply range filter
+  var minDate, maxDate;
+  if (range === 'max') {
+    minDate = new Date(dataMinRaw.getFullYear(), dataMinRaw.getMonth(), 1);
+    maxDate = dataMax;
+  } else {
+    var months = range === '1m' ? 1 : range === '3m' ? 3 : range === '6m' ? 6 : 12;
+    minDate = new Date(today.getFullYear(), today.getMonth(), 1);
+    maxDate = new Date(today.getFullYear(), today.getMonth() + months + 1, 1);
+  }
+  var totalMs = maxDate - minDate || 1;
+
+  function toPct(d) {
+    if (!d) return 0;
+    return Math.min(100, Math.max(0, (d - minDate) / totalMs * 100));
+  }
+
+  var todayPct = toPct(today);
+
+  var months = [];
+  var cur = new Date(minDate);
+  while (cur < maxDate) {
+    months.push(new Date(cur));
+    cur.setMonth(cur.getMonth() + 1);
+  }
+
+  var groups = {};
+  entries.forEach(function(p) {
+    var key = p.client;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(p);
+  });
+  var groupList = Object.keys(groups).sort().map(function(k) {
+    return { name: k, projects: groups[k] };
+  });
+
+  var LW = 220;
+
+  return (
+    <div style={{fontFamily:"'DM Mono',monospace"}}>
+      <div style={{display:"flex",gap:14,marginBottom:14,flexWrap:"wrap",alignItems:"center"}}>
+        {Object.keys(GANTT_PHASE_CLR).filter(function(k,i){ return i < 9; }).map(function(label) {
+          return (
+            <div key={label} style={{display:"flex",alignItems:"center",gap:5}}>
+              <div style={{width:12,height:5,borderRadius:3,background:GANTT_PHASE_CLR[label]}}/>
+              <span style={{fontSize:9,color:"rgba(255,255,255,0.4)"}}>{label}</span>
+            </div>
+          );
+        })}
+        <div style={{display:"flex",alignItems:"center",gap:5}}>
+          <div style={{width:1,height:12,background:"rgba(255,255,255,0.5)"}}/>
+          <span style={{fontSize:9,color:"rgba(255,255,255,0.4)"}}>Today</span>
+        </div>
+        <div style={{display:"flex",background:"rgba(255,255,255,0.05)",borderRadius:8,padding:3,gap:2,marginLeft:"auto"}}>
+          {["1m","3m","6m","12m","max"].map(function(r) {
+            return (
+              <button key={r} onClick={function(){ setRange(r); }}
+                style={{padding:"3px 10px",borderRadius:5,border:"none",cursor:"pointer",
+                  background:range===r?"rgba(200,169,110,0.25)":"transparent",
+                  color:range===r?"#c8a96e":"rgba(255,255,255,0.35)",
+                  fontSize:10,fontFamily:"'DM Mono',monospace",transition:"all 0.15s"}}>
+                {r}
+              </button>
+            );
+          })}
+        </div>
+        <span style={{fontSize:10,color:"rgba(255,255,255,0.25)"}}>
+          {entries.length} projects
+        </span>
+      </div>
+      <div style={{overflowX:"auto"}}>
+        <div style={{minWidth:900}}>
+          <div style={{display:"flex",borderBottom:"1px solid rgba(255,255,255,0.08)",marginBottom:4,paddingBottom:4}}>
+            <div style={{width:LW,flexShrink:0}}/>
+            <div style={{flex:1,position:"relative",height:20}}>
+              {months.map(function(mn, i) {
+                // Skip labels to avoid crowding: every month for ≤6m, every 2 for ≤12m, every 3 for max
+                var step = range === '1m' || range === '3m' || range === '6m' ? 1 : range === '12m' ? 2 : 3;
+                if (i % step !== 0) return null;
+                // For max/12m, show month+year only on Jan or first label; others show month only
+                var isJan = mn.getMonth() === 0;
+                var showYear = range === 'max' || range === '12m';
+                var label = showYear && (isJan || i === 0)
+                  ? mn.toLocaleDateString("en-US",{month:"short",year:"numeric"})
+                  : mn.toLocaleDateString("en-US",{month:"short"});
+                return (
+                  <div key={i} style={{position:"absolute",left:toPct(mn)+"%",fontSize:9,
+                    color:isJan && showYear?"rgba(255,255,255,0.55)":"rgba(255,255,255,0.3)",
+                    borderLeft:"1px solid rgba(255,255,255,"+(isJan && showYear?"0.15":"0.06")+")",
+                    paddingLeft:3,top:3,whiteSpace:"nowrap",fontWeight:isJan && showYear?600:400}}>
+                    {label}
+                  </div>
+                );
+              })}
+              {todayPct >= 0 && todayPct <= 100 && (
+                <div style={{position:"absolute",left:todayPct+"%",top:0,bottom:0,width:1,background:"rgba(255,255,255,0.5)"}}/>
+              )}
+            </div>
+          </div>
+          {groupList.map(function(group) {
+            return (
+              <div key={group.name} style={{marginBottom:4}}>
+                <div style={{display:"flex",alignItems:"center",marginBottom:2,paddingTop:6}}>
+                  <div style={{width:LW,flexShrink:0}}>
+                    <span style={{fontSize:10,fontWeight:600,
+                      color:CLIENT_COLORS[group.name]||"#c8a96e",
+                      letterSpacing:"0.08em",textTransform:"uppercase"}}>
+                      {group.name}
+                    </span>
+                  </div>
+                  <div style={{flex:1,height:1,background:"rgba(255,255,255,0.06)"}}/>
+                </div>
+                {group.projects.map(function(p) {
+                  var burnPct = p.contract && p.fees_used ? Math.round(p.fees_used / p.contract * 100) : null;
+                  var over = p.contract && p.fees_used > p.contract;
+                  var bc = (over || burnPct >= 100) ? "#e07b6a" : (burnPct >= 85 ? "#e8b84b" : "#4caf7d");
+                  return (
+                    <div key={p.id} style={{display:"flex",alignItems:"center",height:26,
+                      borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+                      <div style={{width:LW,flexShrink:0,paddingRight:10,
+                        display:"flex",alignItems:"center",gap:6,overflow:"hidden"}}>
+                        <div style={{width:5,height:5,borderRadius:"50%",background:bc,flexShrink:0}}/>
+                        <div style={{overflow:"hidden",flex:1}}>
+                          <div style={{fontSize:10,color:"rgba(255,255,255,0.75)",
+                            whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+                            {p.name}
+                          </div>
+                          <div style={{fontSize:8,color:"rgba(255,255,255,0.3)",display:"flex",gap:5,marginTop:1}}>
+                            <span>{p.id}</span>
+                            {burnPct != null && <span style={{color:bc}}>{burnPct}%{over?" !":""}</span>}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{flex:1,position:"relative",height:"100%"}}>
+                        {todayPct >= 0 && todayPct <= 100 && (
+                          <div style={{position:"absolute",left:todayPct+"%",top:0,bottom:0,
+                            width:1,background:"rgba(255,255,255,0.1)",zIndex:2}}/>
+                        )}
+                        {p.bars.map(function(bar, bi) {
+                          var l = toPct(bar.start);
+                          var r = bar.end ? toPct(bar.end) : l + 1;
+                          var w = Math.max(0.5, r - l);
+                          var clr = GANTT_PHASE_CLR[bar.label] || "#6b7280";
+                          var isActive = bar.start <= today && bar.end && today <= bar.end;
+                          var isPast = bar.end && today > bar.end;
+                          var barTitle = bar.label + ": " + (bar.start ? bar.start.toLocaleDateString() : "") + (bar.end ? " to " + bar.end.toLocaleDateString() : "");
+                          return (
+                            <div key={bi} title={barTitle}
+                              style={{position:"absolute",
+                                left:l+"%",width:w+"%",
+                                top:"50%",transform:"translateY(-50%)",
+                                height:isActive?10:6,
+                                background:clr,
+                                opacity:isPast?0.25:isActive?1:0.65,
+                                borderRadius:3,zIndex:1}}/>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const [view, setView] = useState('active');
   const [showActive, setShowActive] = useState(true);
@@ -899,6 +1132,7 @@ function App() {
               {label:`Fast Burn (${overBudgetProjects.length})`, v:"overbudget"},
               {label:`This Week (${weeklyChanges.changes ? weeklyChanges.changes.length : 0})`, v:"weekly"},
               {label:`This Month (${weeklyChanges.monthChanges ? weeklyChanges.monthChanges.length : 0})`, v:"monthly"},
+              {label:"Calendar", v:"calendar"},
             ].map(t=>(
               <button key={t.v} onClick={()=>{
                 setView(t.v);
@@ -921,6 +1155,11 @@ function App() {
       )}
       {view === "weekly" && (
         <WeeklyChangesView data={weeklyChanges} period="week" />
+      )}
+      {view === "calendar" && (
+        <div style={{background:"rgba(255,255,255,0.02)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"20px 24px"}}>
+          <CalendarView projects={ALL_PROJECTS.filter(function(p){ return p.active; })} />
+        </div>
       )}
       {view === "monthly" && (
         <WeeklyChangesView data={weeklyChanges} period="month" />
