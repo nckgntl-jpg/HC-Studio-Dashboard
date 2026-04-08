@@ -674,6 +674,98 @@ function OverBudgetView({projects}) {
   );
 }
 
+
+function WeeklyChangesView({data, period}) {
+  if (!data || !data.changes) return null;
+  const isWeek    = period === 'week';
+  const changes   = isWeek ? data.changes : (data.monthChanges || []);
+  const totalDelta = isWeek ? data.totalDelta : data.totalMonthDelta;
+  const prevLabel  = isWeek ? data.prevWeek : data.prevMonth;
+  const currLabel  = data.currWeek;
+  const fmt$ = v => v == null ? "—" : "$" + Math.round(v).toLocaleString();
+
+  if (isWeek && data.changes.length === 0) {
+    return (
+      <div style={{textAlign:"center",padding:"48px 0",color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",fontSize:13}}>
+        {isWeek ? 'No week data yet — need snapshots at least 6 days apart' : 'No month data yet — need snapshots at least 28 days apart'}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:16,flexWrap:"wrap",gap:12}}>
+        <div>
+          <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>
+            Fee activity: {prevLabel || "—"} → {currLabel}
+          </div>
+          <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+            {[
+              ["Projects Billed", String(changes.length), "#c8a96e"],
+              ["Total New Fees", fmt$(totalDelta), "#4caf7d"],
+              ["Avg per Project", fmt$(Math.round(totalDelta / Math.max(1, changes.length))), "rgba(255,255,255,0.5)"],
+            ].map(([l,v,c])=>(
+              <div key={l} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:10,padding:"12px 16px",minWidth:150}}>
+                <div style={{fontSize:9,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:4}}>{l}</div>
+                <div style={{fontSize:22,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:c}}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
+
+      {changes.length === 0 ? (
+        <div style={{textAlign:"center",padding:"32px 0",color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",fontSize:13}}>
+          No {period} data yet — upload snapshots further apart
+        </div>
+      ) : (
+        <React.Fragment>
+          <div style={{display:"grid",gridTemplateColumns:"80px 2.5fr 90px 90px 110px 110px 80px 100px",padding:"6px 12px",fontSize:10,letterSpacing:"0.12em",color:"rgba(255,255,255,0.22)",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
+            <div>ID</div><div>Project</div><div>Client</div><div>Status</div><div>Prev Fees</div><div>Current Fees</div><div>Hrs</div><div>{isWeek ? "This Week" : "This Month"}</div>
+          </div>
+          {changes.map((p,i) => {
+            const clientColor = CLIENT_COLORS[p.client] || "#aaa";
+            const burnPct = p.contract && p.fees_used ? Math.round(p.fees_used/p.contract*100) : null;
+            const over = p.contract && p.fees_used > p.contract;
+            const burnColor = over ? "#e07b6a" : burnPct >= 85 ? "#e8b84b" : "#4caf7d";
+            return (
+              <div key={p.id+period} style={{display:"grid",gridTemplateColumns:"80px 2.5fr 90px 90px 110px 110px 80px 100px",padding:"10px 12px",borderRadius:8,alignItems:"center",borderBottom:"1px solid rgba(255,255,255,0.04)",background:i%2===0?"transparent":"rgba(255,255,255,0.015)"}}>
+                <div style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)"}}>{p.id}</div>
+                <div>
+                  <div style={{fontSize:13,fontWeight:500,lineHeight:1.3}}>{p.name}</div>
+                  <div style={{display:"flex",gap:6,marginTop:2,alignItems:"center"}}>
+                    {p.team.slice(0,3).map(t=><Avatar key={t} name={t} size={18}/>)}
+                    {!p.active && <span style={{fontSize:9,color:"rgba(255,255,255,0.25)",fontFamily:"'DM Mono',monospace",marginLeft:2}}>inactive</span>}
+                    {p.hourly && <span style={{fontSize:9,color:"#7eb8c9",fontFamily:"'DM Mono',monospace",background:"rgba(126,184,201,0.12)",padding:"1px 5px",borderRadius:3}}>T&M</span>}
+                  </div>
+                </div>
+                <div><span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:clientColor,background:clientColor+"18",padding:"2px 6px",borderRadius:4}}>{p.client}</span></div>
+                <div><Badge status={p.status}/></div>
+                <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.35)"}}>{fmt$(p.fees_prev)}</div>
+                <div>
+                  <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.6)",fontWeight:500}}>{fmt$(p.fees_used)}</div>
+                  {burnPct != null && <div style={{fontSize:9,color:burnColor,marginTop:1,fontFamily:"'DM Mono',monospace"}}>{burnPct}% of contract</div>}
+                </div>
+                <div style={{fontSize:12,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.4)"}}>
+                  {Math.round(p.delta / BLENDED_RATE)}h
+                </div>
+                <div>
+                  <div style={{fontSize:13,fontFamily:"'DM Mono',monospace",color:"#4caf7d",fontWeight:700}}>+{fmt$(p.delta)}</div>
+                  <div style={{marginTop:3,background:"rgba(255,255,255,0.05)",borderRadius:99,height:3,overflow:"hidden",width:80}}>
+                    <div style={{width:Math.min(100,Math.round(p.delta/Math.max(1,totalDelta)*100*3))+"%",height:"100%",background:"#4caf7d",borderRadius:99}}/>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </React.Fragment>
+      )}
+    </div>
+  );
+}
+
+
 function App() {
   const [view, setView] = useState('active');
   const [showActive, setShowActive] = useState(true);
@@ -729,6 +821,61 @@ function App() {
   const completedFeesUsed = completedP.reduce((s,p)=>s+(p.fees_used||0),0);
 
 
+  const weeklyChanges = useMemo(() => {
+    if (WEEKLY_SNAPSHOTS.length < 2) return {changes:[], prevWeek:'', currWeek:'', totalDelta:0, monthChanges:[], prevMonth:'', totalMonthDelta:0};
+    // Most recent snapshot
+    const curr = WEEKLY_SNAPSHOTS[WEEKLY_SNAPSHOTS.length - 1];
+    const currDate = new Date(curr.week);
+    // Find best "previous week" snapshot: latest snapshot >= 6 days ago
+    const weekAgo = new Date(currDate); weekAgo.setDate(weekAgo.getDate() - 6);
+    const monthAgo = new Date(currDate); monthAgo.setDate(monthAgo.getDate() - 31);
+    // Week comparison: closest snapshot that is at least 6 days older
+    var weekSnap = null;
+    for (var wi = WEEKLY_SNAPSHOTS.length - 2; wi >= 0; wi--) {
+      var snapDate = new Date(WEEKLY_SNAPSHOTS[wi].week);
+      if (snapDate <= weekAgo) { weekSnap = WEEKLY_SNAPSHOTS[wi]; break; }
+    }
+    // If no snapshot 6+ days ago, just use the previous one
+    if (!weekSnap) weekSnap = WEEKLY_SNAPSHOTS[WEEKLY_SNAPSHOTS.length - 2];
+    // Month comparison: closest snapshot that is at least 28 days older
+    var monthSnap = null;
+    for (var mi = WEEKLY_SNAPSHOTS.length - 2; mi >= 0; mi--) {
+      var mSnapDate = new Date(WEEKLY_SNAPSHOTS[mi].week);
+      if (mSnapDate <= monthAgo) { monthSnap = WEEKLY_SNAPSHOTS[mi]; break; }
+    }
+    function computeChanges(prevSnap, currSnap) {
+      var prev = prevSnap.projects;
+      var currP = currSnap.projects;
+      var changes = [];
+      Object.keys(currP).forEach(function(pid) {
+        var oldVal = prev[pid] || 0;
+        var newVal = currP[pid] || 0;
+        var delta = newVal - oldVal;
+        if (delta <= 0) return;
+        var project = ALL_PROJECTS.find(function(p) { return p.id === pid; });
+        if (!project) return;
+        changes.push({
+          id: pid, name: project.name, client: project.client,
+          team: project.team, status: project.status, active: project.active,
+          contract: project.contract, fees_used: newVal, fees_prev: oldVal,
+          delta: delta, hourly: project.hourly,
+        });
+      });
+      return changes.sort(function(a,b){ return b.delta - a.delta; });
+    }
+    var weekChanges = computeChanges(weekSnap, curr);
+    var monthChanges = monthSnap ? computeChanges(monthSnap, curr) : [];
+    return {
+      changes: weekChanges,
+      prevWeek: weekSnap.week,
+      currWeek: curr.week,
+      totalDelta: weekChanges.reduce(function(s,c){ return s+c.delta; }, 0),
+      monthChanges: monthChanges,
+      prevMonth: monthSnap ? monthSnap.week : '',
+      totalMonthDelta: monthChanges.reduce(function(s,c){ return s+c.delta; }, 0),
+    };
+  }, []);
+
   const statusCounts = useMemo(()=>STATUS_ORDER.reduce((a,s)=>{a[s]=pool.filter(p=>p.status===s).length;return a;},{}), [pool]);
   const personLoad   = useMemo(()=>Object.keys(TEAM_COLORS).map(n=>({name:n,count:pool.filter(p=>p.team.includes(n)).length})).sort((a,b)=>b.count-a.count),[pool]);
   const resetFilters = ()=>{setSearch("");setFC("All");setFP("All");setFCon("All");setFS("All");setFOB(false);};
@@ -750,11 +897,14 @@ function App() {
               {label:`Active (${active.length})`, v:"active"},
               {label:`Inactive (${inactive.length})`, v:"inactive"},
               {label:`Fast Burn (${overBudgetProjects.length})`, v:"overbudget"},
+              {label:`This Week (${weeklyChanges.changes ? weeklyChanges.changes.length : 0})`, v:"weekly"},
+              {label:`This Month (${weeklyChanges.monthChanges ? weeklyChanges.monthChanges.length : 0})`, v:"monthly"},
             ].map(t=>(
               <button key={t.v} onClick={()=>{
                 setView(t.v);
                 if(t.v==="active"){setShowActive(true);resetFilters();}
                 else if(t.v==="inactive"){setShowActive(false);resetFilters();}
+                else {resetFilters();}
               }} style={{padding:"5px 14px",borderRadius:6,border:"none",
                 background:view===t.v?"rgba(200,169,110,0.2)":"transparent",
                 color:view===t.v?"#c8a96e":"rgba(255,255,255,0.35)",
@@ -768,6 +918,12 @@ function App() {
 
       {view === "overbudget" && (
         <OverBudgetView projects={overBudgetProjects} />
+      )}
+      {view === "weekly" && (
+        <WeeklyChangesView data={weeklyChanges} period="week" />
+      )}
+      {view === "monthly" && (
+        <WeeklyChangesView data={weeklyChanges} period="month" />
       )}
       {view !== "overbudget" && showActive && (
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginBottom:16}}>
