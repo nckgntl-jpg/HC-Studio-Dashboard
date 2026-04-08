@@ -35,7 +35,7 @@ const ALL_PROJECTS = [
   ["25362", "ABC", "ABC Gahana Office Center", ["Steve"], [], "Hold", false, "", 18000, 5667.5, false, "[{\"l\": \"1.1 - Exist Cond Surv & SD - LGA\", \"c\": 2000.0, \"u\": 5667.5, \"inv\": 2000.0, \"t\": false}, {\"l\": \"2.1 - CDs & Permitting - LGA\", \"c\": 16000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.1 - CA - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 Miles from Pitt - LGA\", \"c\": 0.0, \"u\": null, \"inv\": 495.0, \"t\": false}]"],
   ["25362.1", "ABC", "ABC Gahana Office Center", ["Steve"], [], "Hold", false, "", 2000, 2425.0, false, "[{\"l\": \"1.1 - Exist Cond + SD - LGA\", \"c\": 2000.0, \"u\": 1435.0, \"inv\": 1000.0, \"t\": false}, {\"l\": \"XTR1.1 - Site > 120 Miles from Pitt - LGA\", \"c\": 0.0, \"u\": 990.0, \"inv\": 990.0, \"t\": false}]"],
   ["25462", "ABC", "ABC Reynoldsburg", ["Steve"], [], "Hold", false, "", 26400, 7455.0, false, "[{\"l\": \"2.1 - CDs & Agency Approval - LGA\", \"c\": 16000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.1 - Exist Cond./SD - LGA\", \"c\": 2000.0, \"u\": 4485.0, \"inv\": 2000.0, \"t\": false}, {\"l\": \"EX1.1 - Site Investigation, No As-Builts - LGA\", \"c\": 2000.0, \"u\": 2475.0, \"inv\": 2000.0, \"t\": false}, {\"l\": \"EX2.1 - Generation Digital Floor Plan - LGA\", \"c\": 4000.0, \"u\": 495.0, \"inv\": 4000.0, \"t\": false}, {\"l\": \"EX4.1 - Site Plan if no Site Plan exists - LGA\", \"c\": 2400.0, \"u\": null, \"inv\": null, \"t\": false}]"],
-  ["26156", "ABC", "ABC Westerville Play Yard", ["David"], [], "Rendering", true, "SD/S1: 3/16/2026 - 3/23/2026", null, null, false, "[]"],
+  ["25348.1", "ABC", "ABC Westerville Play Yard", ["David"], [], "Rendering", true, "SD/S1: 3/16/2026 - 3/23/2026", 5100.0, 4765.0, false, "[{\"l\": \"Site Plan - LGA\", \"c\": 2100.0, \"u\": 1605.0, \"inv\": 2100.0, \"t\": false}, {\"l\": \"Rendering - LGA\", \"c\": 3000.0, \"u\": 3160.0, \"inv\": 3000.0, \"t\": false}]"],
   ["23099", "AHN", "AHN AVH Parking Garage Renovation", ["Bill"], ["KSS", "HF Lenz"], "Stage 4", true, "CD/S3: 3/1/2024 - 10/31/2024 CA/S4: 11/5/2024 - 12/31/2026", 80657.44, 38905.0, false, "[{\"l\": \"3.1 - Stage 3 (CD) - Architectural\", \"c\": 43904.0, \"u\": 27460.0, \"inv\": 43904.0, \"t\": false}, {\"l\": \"2.1 - Stage 2 (SD/DD) - Architectural\", \"c\": 2660.0, \"u\": null, \"inv\": 2660.0, \"t\": false}, {\"l\": \"1.1 - Stage 1 (Programing) - Architecture\", \"c\": 3660.0, \"u\": null, \"inv\": 3660.0, \"t\": false}, {\"l\": \"4.1 - Stage 4 (CA) - Architectural\", \"c\": 30433.44, \"u\": 11445.0, \"inv\": 30433.44, \"t\": false}]"],
   ["24387", "AHN", "AHN SVH Roof", ["Nick"], [], "Closeout", false, "", 88187.5, 35721.25, false, "[{\"l\": \"1.1 - Base Bid - Stage 3 LGA\", \"c\": 36000.0, \"u\": 20363.75, \"inv\": 36000.0, \"t\": false}, {\"l\": \"3.1 - Alternate Scope - Stage 3 LGA\", \"c\": 21000.0, \"u\": 1462.5, \"inv\": 21000.0, \"t\": false}, {\"l\": \"4.1 - Alternate Scope - Stage 4 LGA\", \"c\": 5000.0, \"u\": 1920.0, \"inv\": 5000.0, \"t\": false}, {\"l\": \"2.1 - Base Bid - Stage 4 LGA\", \"c\": 16000.0, \"u\": 4692.5, \"inv\": 16000.0, \"t\": false}, {\"l\": \"8.0 - VE ASAFs\", \"c\": 5287.5, \"u\": 3975.0, \"inv\": 5287.5, \"t\": false}, {\"l\": \"9.1 - ASAF #2 - New Stairs - LGA\", \"c\": 4900.0, \"u\": 2587.5, \"inv\": 4900.0, \"t\": false}, {\"l\": \"9.3 - ASAF #3 - Additional Roofs\", \"c\": 0.0, \"u\": 720.0, \"inv\": null, \"t\": false}]"],
   ["25051", "AHN", "SVH Pharmacy", ["Nick"], [], "Stage 4", false, "", 11090, 8437.5, false, "[{\"l\": \"2.1 - CD's - LGA\", \"c\": 4750.0, \"u\": 2310.0, \"inv\": 4750.0, \"t\": false}, {\"l\": \"1.1 - Existing Conditions/SD - LGA\", \"c\": 4750.0, \"u\": 4537.5, \"inv\": 4750.0, \"t\": false}, {\"l\": \"3.1 - CA/ASAFs - LGA\", \"c\": 0.0, \"u\": 1590.0, \"inv\": 1590.0, \"t\": false}]"],
@@ -44,7 +44,6 @@ const ALL_PROJECTS = [
   ["25449", "AHN", "AHN Forbes Hospital MRI Replacement", ["Nick", "Miki"], ["Osborn", "B&H"], "Stage 2", true, "SD/S1: 8/19/2025 - 2/4/2026 Stage 3a: 1/12/26 - 4/15/26", 113480, 87836.25, false, "[{\"l\": \"2.1 - Stage 2 - LGA\", \"c\": 22970.0, \"u\": 27810.0, \"inv\": 22970.0, \"t\": false}, {\"l\": \"1.1 - Stage 1 - LGA\", \"c\": 24480.0, \"u\": 22612.5, \"inv\": 24480.0, \"t\": false}, {\"l\": \"XTR1.1 - ASAF 1 - Revised Stage 1 after Stage 2- LGA\", \"c\": 32030.0, \"u\": 26993.75, \"inv\": 32030.0, \"t\": false}, {\"l\": \"XTR2.1a - ASAF 2 - Stage 3 Base - LGA\", \"c\": 22720.0, \"u\": 10420.0, \"inv\": 10000.0, \"t\": false}, {\"l\": \"XTR2.1b - ASAF 2 - Stage 3 Add - LGA\", \"c\": 3280.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.2a - ASAF 2 - Stage 4 Base - LGA\", \"c\": 5760.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"XTR2.2b - ASAF 2 - Stage 4 Add - LGA\", \"c\": 2240.0, \"u\": null, \"inv\": null, \"t\": false}]"],
   ["25475", "AHN", "AHN Bethel Physical Therapy Relocation", ["Steve"], ["FMRW"], "CA", true, "DD/S2: 8/28/2025 - 11/12/2025 CD/S3: 10/20/2025 - 12/18/2025 CA/S4: 4/20/2026 - 6/20/2026", 29500, 22620.0, false, "[{\"l\": \"RE - Expenses - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.1 - Permitting - LGA\", \"c\": 3000.0, \"u\": null, \"inv\": 3000.0, \"t\": false}, {\"l\": \"2.1 - CD's - LGA\", \"c\": 19500.0, \"u\": 17902.5, \"inv\": 19500.0, \"t\": false}, {\"l\": \"1.1 - Existing Conditions/SD - LGA\", \"c\": 7000.0, \"u\": 4717.5, \"inv\": 7000.0, \"t\": false}]"],
   ["25508", "AHN", "AHN Bethel Cardiology", ["Steve"], ["FMRW"], "CA", true, "DD/S2: 8/28/2025 - 11/12/2025 CD/S3: 10/20/2025 - 12/18/2025 CA/S4: 4/20/2026 - 6/20/2026", 5000, 1360.0, false, "[{\"l\": \"1.0 - SOW Documents\", \"c\": 5000.0, \"u\": 1360.0, \"inv\": 5000.0, \"t\": false}, {\"l\": \"2.0 - Interior Design\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"3.0 - CA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
-  ["26017", "AHN", "AHN SVH Elevator", ["Nick"], ["KSS"], "Stage 3", true, "CD/S3: 2/17/2026 - 4/10/2026", null, null, false, "[]"],
   ["25617", "AHN", "AHN SVH CVI Nuclear Camera Upgrades", ["Nick", "Steve"], ["Osborn", "B&H"], "Stage 3", true, "DD/S2: 11/7/2025 - 2/27/2026", 19959, 9255.0, false, "[{\"l\": \"Architectural - LGA\", \"c\": 9690.0, \"u\": 9255.0, \"inv\": 9690.0, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 10269.0, \"u\": null, \"inv\": 10269.0, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
   ["P26XXX", "AHN", "SVH CT, MRI, Cath Lab", ["Nick"], [], "Pending", false, "", null, null, false, "[]"],
   ["26115", "AHN", "WHWP - Imaging Replacement Masterplan", ["Nick", "Miki", "Chris"], ["Osborn"], "Stage 1", true, "SD/S1: 3/23/2026 - 5/4/2026", null, 5345.0, false, "[{\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": 5345.0, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Training - All Stages\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
@@ -56,13 +55,13 @@ const ALL_PROJECTS = [
   ["25054", "Industrial", "Warehouse Office Fit Out Allegheny Petroleum", ["Drew"], ["Claitman"], "CA", true, "SD/S1: 2/5/2025 - 3/25/2025 CD/S3: 9/26/2025 - 3/11/2026 CA/S4: 5/1/2026 - 10/1/2026 (hourly)", 45440.0, 74108.75, false, "[{\"l\": \"1.1 - Schematic Design\", \"c\": 8500.0, \"u\": 11615.0, \"inv\": 8500.0, \"t\": false}, {\"l\": \"1.3 - Construction Documents\", \"c\": 27000.0, \"u\": 58798.75, \"inv\": 27000.0, \"t\": false}, {\"l\": \"1.0 - Existing Conditions\", \"c\": 3500.0, \"u\": null, \"inv\": 3500.0, \"t\": false}, {\"l\": \"1.4 - Permitting\", \"c\": 3500.0, \"u\": null, \"inv\": 1000.0, \"t\": false}, {\"l\": \"1.1a Schematic Design Additional Schemes\", \"c\": 0.0, \"u\": 460.0, \"inv\": 460.0, \"t\": false}, {\"l\": \"ASAF #1 - Adjusting Plans to Project Budget\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"1.35 -  Interior Design\", \"c\": 0.0, \"u\": 72.5, \"inv\": 72.5, \"t\": false}, {\"l\": \"1.5 - CA - LGA\", \"c\": 0.0, \"u\": 240.0, \"inv\": 240.0, \"t\": false}, {\"l\": \"ASAF #4 2nd Floor Restroom Reconfig (LGA)\", \"c\": 2940.0, \"u\": 2922.5, \"inv\": 2940.0, \"t\": false}]"],
   ["25054.1", "Industrial", "Warehouse Office Fit Out Allegheny Petroleum", ["Drew", "David"], ["Claitman"], "", false, "", null, 23258.75, false, "[{\"l\": \"XTRA\", \"c\": 0.0, \"u\": 23258.75, \"inv\": 23258.75, \"t\": false}]"],
   ["25110.1", "Industrial", "Clearview Greentree Hill", ["Gary"], [], "CA", true, "CA/S4: 6/1/2026 - 2/1/2027 (hourly)", 238235, 210967.5, false, "[{\"l\": \"Schematic Design\", \"c\": 0.0, \"u\": 85858.75, \"inv\": 85884.86, \"t\": false}, {\"l\": \"Site Planning\", \"c\": 0.0, \"u\": 462.5, \"inv\": 462.5, \"t\": false}, {\"l\": \"Municipal / AHJ Approvals\", \"c\": 0.0, \"u\": 5313.75, \"inv\": 5313.75, \"t\": false}, {\"l\": \"Design Development\", \"c\": 60200.0, \"u\": 56285.0, \"inv\": 60200.0, \"t\": false}, {\"l\": \"Bidding / Permitting\", \"c\": 5000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Documents\", \"c\": 81400.0, \"u\": 63047.5, \"inv\": 81400.0, \"t\": false}]"],
-  ["25307", "Industrial", "Waterdam Rite Aid Reuse Silk & Stewart", ["Gary", "David"], [], "CA", true, "", null, null, false, "[]"],
+  ["25307", "Industrial", "Waterdam Rite Aid Reuse Silk & Stewart", ["Gary", "David"], [], "CA", true, "", null, 41805.0, true, "[{\"l\": \"T&M Services\", \"c\": 0.0, \"u\": 41805.0, \"inv\": null, \"t\": true}]"],
   ["25534", "Industrial", "We Rock the Spectrum - Butler", ["Drew", "David"], ["Claitman"], "CA", true, "", 18128.75, 17911.25, false, "[{\"l\": \"Arch. - CD / Permitting\", \"c\": 18020.0, \"u\": 17802.5, \"inv\": 18020.0, \"t\": false}, {\"l\": \"Arch. - CA\", \"c\": 0.0, \"u\": 108.75, \"inv\": 108.75, \"t\": false}]"],
   ["25504", "Industrial", "The Back Nine Golf - Lafayette", ["Drew", "David"], ["Claitman"], "CA", true, "CD/S3: 3/1/2026 - 4/15/2026 CA/S4:  - 4/30/2026", 14200, 18263.75, false, "[{\"l\": \"SD\", \"c\": 3140.0, \"u\": 8165.0, \"inv\": 3140.0, \"t\": false}, {\"l\": \"CD/Permitting\", \"c\": 11060.0, \"u\": 10098.75, \"inv\": 11060.0, \"t\": false}]"],
   ["26013", "Industrial", "The Back Nine Golf - Mars", ["Drew", "David"], ["Claitman"], "CD", true, "CA/S4: 6/1/2026 - 8/31/2026 (hourly)", 14900, 19875.0, false, "[{\"l\": \"Arch - Schematic Design\", \"c\": 3300.0, \"u\": 12095.0, \"inv\": 3300.0, \"t\": false}, {\"l\": \"Arch - Construction Documents/Permitting\", \"c\": 11600.0, \"u\": 7780.0, \"inv\": 11600.0, \"t\": false}, {\"l\": \"Arch - Conditional Use (Hourly)\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Arch - Construction Administration (Hourly)\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
   ["P25675", "Industrial", "The Back Nine - Gibsonia", ["Drew"], [], "", false, "", null, null, false, "[]"],
   ["26008", "Industrial", "Lafayette Paint Colors", ["Ashley", "David"], [], "SD", false, "", 460, 460.0, false, "[{\"l\": \"Schematic Design\", \"c\": 0.0, \"u\": 460.0, \"inv\": 460.0, \"t\": false}]"],
-  ["26157", "Industrial", "Clearview McMurray Branch", ["Ashley", "David"], [], "SD", true, "SD/S1: 3/15/2026 - 4/8/2026 (hourly) CD/S3: 4/8/2026 - 5/8/2026", null, null, false, "[]"],
+  ["26157", "Industrial", "Clearview McMurray Branch", ["Ashley", "David"], [], "SD", true, "SD/S1: 3/15/2026 - 4/8/2026 (hourly) CD/S3: 4/8/2026 - 5/8/2026", null, 6610.0, true, "[{\"l\": \"SD - LGA (T&M)\", \"c\": 0.0, \"u\": 6610.0, \"inv\": null, \"t\": true}]"],
   ["25658", "Industrial", "CCC Calos LOD", ["Ashley", "David"], [], "LOD", false, "", 881.25, 881.25, false, "[{\"l\": \"1.1 - Schematic Design\", \"c\": 0.0, \"u\": 881.25, \"inv\": 881.25, \"t\": false}]"],
   ["26100", "Industrial", "Waterdam LOD", ["David", "Ashley"], [], "LOD", false, "", null, null, false, "[]"],
   ["26108", "Industrial", "CCC 220 Dal Tile LOD", ["Ashley", "David"], [], "LOD", false, "", null, null, false, "[]"],
@@ -101,8 +100,9 @@ const ALL_PROJECTS = [
   ["26046", "UPMC", "UPMC Aesthetic Plastic Surgery Relocation", ["Miki", "Chris", "Ashley"], ["Osborn"], "SD", true, "SD/S1: 3/1/2026 - 4/14/2026 DD/S2: 4/15/2026 - 5/12/2026 CD/S3: 5/13/2026 - 7/10/2026 CA/S4: 8/15/2026 - 2/15/2027", 54215, 23955.0, false, "[{\"l\": \"Schematic Design / Existing Conditions - LGA\", \"c\": 10400.0, \"u\": 23955.0, \"inv\": 10400.0, \"t\": false}, {\"l\": \"Design Development - LGA\", \"c\": 14265.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Construction Documents - LGA\", \"c\": 25300.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Procurement - LGA\", \"c\": 4250.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"Training\", \"c\": 0.0, \"u\": null, \"inv\": null, \"t\": false}]"],
   ["P26109", "UPMC", "UPMC Presbyterian", ["Miki", "Nick", "Steve"], [], "Proposal", true, "", null, null, false, "[]"],
   ["P26171", "UPMC", "Pharmalogic UPMC MUH Radiopharmacy Dock Lift Study", ["Miki", "Nick"], ["Osborn", "B&H"], "Proposal", true, "", null, null, false, "[]"],
-  ["26185", "Industrial", "Misc. LOD File Gathering Cranberry Corporate Center Lafayette Plaza Waterdam", ["Ashley", "David"], [], "LOD", true, "SD/S1: 3/30/2026 - 4/10/2026 (hourly)", null, null, false, "[]"],
+  ["26185", "Industrial", "Misc. LOD File Gathering Cranberry Corporate Center Lafayette Plaza Waterdam", ["Ashley", "David"], [], "LOD", true, "SD/S1: 3/30/2026 - 4/10/2026 (hourly)", null, 530.0, true, "[{\"l\": \"T&M Services\", \"c\": 0.0, \"u\": 530.0, \"inv\": null, \"t\": true}]"],
   ["23073.2", "UPMC", "MUH Roof Replacement", ["Chris", "Miki"], ["A&S", "B&H"], "CA", true, "CA/S4: 4/1/2026 - 9/1/2026", 27500.0, 22816.25, false, "[{\"l\": \"1.1 - SD - LGA\", \"c\": 2850.0, \"u\": 13915.0, \"inv\": 2850.0, \"t\": false}, {\"l\": \"2.1 - DD - LGA\", \"c\": 3800.0, \"u\": null, \"inv\": 3800.0, \"t\": false}, {\"l\": \"3.1 - CD - LGA\", \"c\": 6495.0, \"u\": 932.5, \"inv\": 6495.0, \"t\": false}, {\"l\": \"4.1 - Procurement - LGA\", \"c\": 855.0, \"u\": 7968.75, \"inv\": 855.0, \"t\": false}, {\"l\": \"5.1 - Construction Administration - LGA\", \"c\": 7000.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"6.1 - Close - Out - LGA\", \"c\": 500.0, \"u\": null, \"inv\": null, \"t\": false}, {\"l\": \"7.1 - Amendment No. 1 - Add Bidding - LGA\", \"c\": 6000.0, \"u\": null, \"inv\": 6000.0, \"t\": false}]"],
+  ["26071", "AHN", "AHN SVH Elevator", ["Nick"], ["KSS"], "Stage 3", true, "CD/S3: 2/17/2026 - 4/10/2026", 13000.0, 5598.75, false, "[{\"l\": \"Architectural - LGA\", \"c\": 9800.0, \"u\": 5598.75, \"inv\": 6000.0, \"t\": false}, {\"l\": \"Architectural - LGA\", \"c\": 3200.0, \"u\": null, \"inv\": null, \"t\": false}]"],
 ].map(r => ({
   id:r[0], client:r[1], name:r[2], team:r[3], consultants:r[4],
   status:r[5], active:r[6], milestones:r[7],
@@ -728,58 +728,6 @@ function App() {
   const completedContract = completedP.reduce((s,p)=>s+(p.hourly ? (p.fees_used||0) : (p.contract||0)),0);
   const completedFeesUsed = completedP.reduce((s,p)=>s+(p.fees_used||0),0);
 
-  const weeklyProjects = useMemo(() => {
-    var today = new Date();
-    // End of current week (Friday)
-    var endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() + (5 - today.getDay()));
-    function parseD(s) {
-      if (!s) return null;
-      if (s instanceof Date) return s;
-      if (typeof s !== 'string') return null;
-      var clean = s.replace(/\s*\([^)]*\)/g, '').replace(/(\d+\/\d+)-\d+(\/\d+)/, '$1$2').trim();
-      var pts = clean.split('/');
-      if (pts.length < 3) return null;
-      try {
-        var mo = parseInt(pts[0]), dy = parseInt(pts[1]);
-        var yr = pts[2].length === 2 ? 2000 + parseInt(pts[2]) : parseInt(pts[2]);
-        return new Date(yr, mo - 1, dy);
-      } catch(e) { return null; }
-    }
-    function getProjectEnd(p) {
-      if (!p.milestones) return null;
-      var dateRe = /(\d{1,2}\/\d{1,2}(?:-\d+)?\/\d{2,4})/g;
-      var dates = [], dm;
-      while ((dm = dateRe.exec(p.milestones)) !== null) {
-        var d = parseD(dm[1]);
-        if (d) dates.push(d);
-      }
-      if (!dates.length) return null;
-      return new Date(Math.max.apply(null, dates));
-    }
-    var result = [];
-    active.forEach(function(p) {
-      if (!p.contract || !p.fees_used) return;
-      var endDate = getProjectEnd(p);
-      // Skip projects with no end date, already past, or ending this week
-      if (!endDate || endDate <= endOfWeek) return;
-      var remaining = Math.max(0, p.contract - p.fees_used);
-      var weeksLeft = (endDate - today) / (7 * 24 * 60 * 60 * 1000);
-      if (weeksLeft < 1) return;
-      var hrsPerWeek = (remaining / BLENDED_RATE) / weeksLeft;
-      result.push({
-        id: p.id, name: p.name, client: p.client, team: p.team,
-        status: p.status, isSub: false,
-        endDate: endDate,
-        weeksLeft: Math.round(weeksLeft * 10) / 10,
-        remainingHrs: Math.round(remaining / BLENDED_RATE),
-        hrsPerWeek: Math.round(hrsPerWeek * 10) / 10,
-      });
-    });
-    return result.sort(function(a, b) { return b.hrsPerWeek - a.hrsPerWeek; });
-  }, [active]);
-  const totalWeeklyHrs = weeklyProjects.reduce(function(s, p) { return s + p.hrsPerWeek; }, 0);
-  const capacityPct    = Math.round(totalWeeklyHrs / STUDIO_CAPACITY * 100);
 
   const statusCounts = useMemo(()=>STATUS_ORDER.reduce((a,s)=>{a[s]=pool.filter(p=>p.status===s).length;return a;},{}), [pool]);
   const personLoad   = useMemo(()=>Object.keys(TEAM_COLORS).map(n=>({name:n,count:pool.filter(p=>p.team.includes(n)).length})).sort((a,b)=>b.count-a.count),[pool]);
@@ -830,78 +778,6 @@ function App() {
         </div>
       )}
 
-      {view !== "overbudget" && showActive && weeklyProjects.length > 0 && (
-        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 20px",marginBottom:12}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14,flexWrap:"wrap",gap:12}}>
-            <div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:6}}>
-                Weekly Hours Required — {weeklyProjects.length} project{weeklyProjects.length!==1?"s":""} with dates & fees
-              </div>
-              <div style={{display:"flex",gap:24,alignItems:"baseline",flexWrap:"wrap"}}>
-                <div>
-                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d",lineHeight:1}}>{Math.round(totalWeeklyHrs)}h</div>
-                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>hrs needed / week</div>
-                </div>
-                <div>
-                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:"rgba(255,255,255,0.4)",lineHeight:1}}>{STUDIO_CAPACITY}h</div>
-                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>capacity (7 x 40h)</div>
-                </div>
-                <div>
-                  <div style={{fontSize:28,fontWeight:700,fontFamily:"'Cormorant Garamond',serif",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d",lineHeight:1}}>{capacityPct}%</div>
-                  <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",marginTop:2}}>of capacity</div>
-                </div>
-                {capacityPct > 100 && (
-                  <div style={{background:"rgba(224,123,106,0.12)",border:"1px solid rgba(224,123,106,0.3)",borderRadius:8,padding:"6px 12px"}}>
-                    <div style={{fontSize:12,fontWeight:600,color:"#e07b6a"}}>!! {Math.round(totalWeeklyHrs - STUDIO_CAPACITY)}h over capacity</div>
-                    <div style={{fontSize:10,color:"rgba(255,255,255,0.35)",marginTop:1}}>based on {weeklyProjects.length} tracked projects</div>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div style={{flex:1,maxWidth:220}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                <span style={{fontSize:10,color:"rgba(255,255,255,0.3)",fontFamily:"'DM Mono',monospace"}}>studio load</span>
-                <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"#4caf7d"}}>{capacityPct}%</span>
-              </div>
-              <div style={{background:"rgba(255,255,255,0.06)",borderRadius:99,height:6,overflow:"hidden"}}>
-                <div style={{width:`${Math.min(100,capacityPct)}%`,height:"100%",background:capacityPct>100?"#e07b6a":capacityPct>80?"#e8b84b":"linear-gradient(90deg,#4caf7d,#7eb8c9)",borderRadius:99}}/>
-              </div>
-              <div style={{fontSize:10,color:"rgba(255,255,255,0.2)",marginTop:4,fontFamily:"'DM Mono',monospace"}}>
-                {weeklyProjects.length} of {active.length} projects tracked
-              </div>
-            </div>
-          </div>
-          <div style={{display:"flex",flexDirection:"column",gap:4}}>
-            <div style={{display:"grid",gridTemplateColumns:"180px 100px 1fr 80px 80px 80px",gap:10,padding:"0 0 4px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-              {["Project","Client","","hrs/wk","Remaining","Weeks"].map((h,i)=>(
-                <span key={i} style={{fontSize:9,color:"rgba(255,255,255,0.2)",fontFamily:"'DM Mono',monospace",textAlign:i>=3?"right":"left",textTransform:"uppercase",letterSpacing:"0.08em"}}>{h}</span>
-              ))}
-            </div>
-            {weeklyProjects.map((p,i) => {
-              const pct = Math.min(100, Math.round(p.hrsPerWeek / STUDIO_CAPACITY * 100));
-              const color = p.hrsPerWeek > 80 ? "#e07b6a" : p.hrsPerWeek > 40 ? "#e8b84b" : "#7eb8c9";
-              const clientColor = cc(p.client);
-              return (
-                <div key={p.id+p.name+i} style={{display:"grid",gridTemplateColumns:"180px 100px 1fr 80px 80px 80px",alignItems:"center",gap:10,padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
-                  <div style={{overflow:"hidden"}}>
-                    <div style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)",lineHeight:1.2}}>{p.id}</div>
-                    <div style={{fontSize:11,fontFamily:"'Cormorant Garamond',serif",color:"rgba(255,255,255,0.65)",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",lineHeight:1.3}}>{p.name}</div>
-                  </div>
-                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:clientColor,background:clientColor+"18",padding:"1px 6px",borderRadius:4,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.client}</span>
-                  <div style={{display:"flex",alignItems:"center",gap:6}}>
-                    <div style={{flex:1,background:"rgba(255,255,255,0.05)",borderRadius:99,height:4,overflow:"hidden"}}>
-                      <div style={{width:`${pct}%`,height:"100%",background:color,borderRadius:99}}/>
-                    </div>
-                  </div>
-                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color,textAlign:"right",fontWeight:600}}>{p.hrsPerWeek}h</span>
-                  <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.3)",textAlign:"right"}}>{p.remainingHrs}h</span>
-                  <span style={{fontSize:10,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.2)",textAlign:"right"}}>{p.weeksLeft}wks</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       {showActive && feeP.length > 0 && (
         <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12,padding:"14px 20px",marginBottom:12}}>
@@ -1061,7 +937,7 @@ function App() {
 
               {isOpen && (
                 <div style={{margin:"0 8px 8px",padding:"20px",background:"rgba(255,255,255,0.025)",borderRadius:"0 0 12px 12px",border:"1px solid rgba(200,169,110,0.15)",borderTop:"none",animation:"fadeIn 0.2s ease"}}>
-                  <div style={{display:"grid",gridTemplateColumns:"1.2fr 1.3fr 1fr 1fr 1fr",gap:16}}>
+                  <div style={{display:"grid",gridTemplateColumns:"0.9fr 1.8fr 1fr 1fr",gap:16}}>
                     <div>
                       <div style={{fontSize:10,color:"rgba(255,255,255,0.3)",letterSpacing:"0.12em",textTransform:"uppercase",fontFamily:"'DM Mono',monospace",marginBottom:10}}>Project Details</div>
                       {[["No",p.id,"#fff"],["Client",p.client,clientColor],["Status",p.status,(STATUS_CFG[p.status]||{}).color||"#aaa"]].map(([l,v,c])=>(
@@ -1100,22 +976,23 @@ function App() {
                             const pct     = hasFee && hasUsed ? Math.min(100, Math.round(ph.u / ph.c * 100)) : null;
                             const over    = hasFee && hasUsed && ph.u > ph.c;
                             const color   = over ? "#e07b6a" : pct >= 85 ? "#e8b84b" : "#4caf7d";
+                            const bdrClr  = over ? "rgba(224,123,106,0.5)" : pct >= 85 ? "rgba(232,184,75,0.4)" : "rgba(255,255,255,0.08)";
                             return (
-                              <div key={i}>
-                                <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:2}}>
-                                  <span style={{fontSize:11,color:"rgba(255,255,255,0.6)",fontFamily:"'DM Mono',monospace",flex:1,paddingRight:8,lineHeight:1.3}}>
-                                    {ph.t && <span style={{color:"rgba(126,184,201,0.6)",marginRight:4,fontSize:9}}>T&M</span>}
-                                    {ph.l}
-                                  </span>
-                                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.4)",whiteSpace:"nowrap"}}>
+                              <div key={i} style={{padding:"7px 10px",borderRadius:6,background:"rgba(255,255,255,0.025)",borderLeft:`2px solid ${bdrClr}`}}>
+                                <div style={{fontSize:10,color:"rgba(255,255,255,0.6)",fontFamily:"'DM Mono',monospace",lineHeight:1.4,marginBottom:4}}>
+                                  {ph.t && <span style={{color:"#7eb8c9",fontSize:8,fontWeight:600,background:"rgba(126,184,201,0.15)",padding:"1px 4px",borderRadius:3,marginRight:5}}>T&M</span>}
+                                  {ph.l}
+                                </div>
+                                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                                  <div style={{flex:1,background:"rgba(255,255,255,0.06)",borderRadius:99,height:3,overflow:"hidden",display:hasFee?"block":"none"}}>
+                                    <div style={{width:`${Math.min(100,pct||0)}%`,height:"100%",background:color,borderRadius:99}}/>
+                                  </div>
+                                  <span style={{fontSize:11,fontFamily:"'DM Mono',monospace",color:"rgba(255,255,255,0.5)",whiteSpace:"nowrap",flexShrink:0,marginLeft:"auto"}}>
                                     {hasUsed ? `$${Math.round(ph.u).toLocaleString()}` : '—'}
-                                    {hasFee ? <span style={{color:"rgba(255,255,255,0.2)"}}> / ${Math.round(ph.c).toLocaleString()}</span> : null}
-                                    {pct != null && <span style={{marginLeft:6,color}}>{pct}%{over?' ⚠':''}</span>}
+                                    {hasFee && <span style={{color:"rgba(255,255,255,0.2)"}}> / ${Math.round(ph.c).toLocaleString()}</span>}
+                                    {pct != null && <span style={{marginLeft:6,color,fontWeight:700}}>{pct}%{over?' ⚠':''}</span>}
                                   </span>
                                 </div>
-                                {hasFee && <div style={{background:"rgba(255,255,255,0.05)",borderRadius:99,height:2,overflow:"hidden"}}>
-                                  <div style={{width:`${Math.min(100,pct||0)}%`,height:"100%",background:color,borderRadius:99}}/>
-                                </div>}
                               </div>
                             );
                           })}
